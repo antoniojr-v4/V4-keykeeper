@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FolderLock, History, Clock, Upload, LogOut, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, FolderLock, History, Clock, Upload, LogOut, Settings, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
 import { AuthContext } from '@/App';
 
 const Sidebar = () => {
