@@ -481,6 +481,31 @@ const VaultExplorer = () => {
                               <Label htmlFor="login_instructions">Login Instructions</Label>
                               <Input id="login_instructions" name="login_instructions" placeholder="e.g., Use VPN first" />
                             </div>
+
+                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#e5e7eb]">
+                              <div className="flex items-center gap-2">
+                                <input 
+                                  type="checkbox" 
+                                  id="no_copy" 
+                                  name="no_copy"
+                                  className="w-4 h-4 text-[#ff2c2c] border-gray-300 rounded focus:ring-[#ff2c2c]"
+                                />
+                                <Label htmlFor="no_copy" className="cursor-pointer">
+                                  No Copy (prevent clipboard)
+                                </Label>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <input 
+                                  type="checkbox" 
+                                  id="requires_checkout" 
+                                  name="requires_checkout"
+                                  className="w-4 h-4 text-[#ff2c2c] border-gray-300 rounded focus:ring-[#ff2c2c]"
+                                />
+                                <Label htmlFor="requires_checkout" className="cursor-pointer">
+                                  Requires Check-out
+                                </Label>
+                              </div>
+                            </div>
                           </div>
                           <DialogFooter>
                             <Button type="submit" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">Create Item</Button>
