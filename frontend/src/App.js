@@ -2,6 +2,7 @@ import React, { useState, useEffect, createContext } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
+import { Toaster } from "sonner";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import VaultExplorer from "@/pages/VaultExplorer";
