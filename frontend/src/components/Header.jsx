@@ -36,7 +36,7 @@ const Header = ({ title, description }) => {
                 className="w-8 h-8 rounded-full"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-[#10b981] flex items-center justify-center text-white font-semibold">
+              <div className="w-8 h-8 rounded-full bg-[#ff2c2c] flex items-center justify-center text-white font-semibold">
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
             )}
