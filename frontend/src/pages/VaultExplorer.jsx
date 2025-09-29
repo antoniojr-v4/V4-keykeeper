@@ -29,6 +29,8 @@ const VaultExplorer = () => {
   const [showJITRequest, setShowJITRequest] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [revealedPassword, setRevealedPassword] = useState(null);
+  const [clientShareUrl, setClientShareUrl] = useState(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     fetchVaults();
