@@ -620,6 +620,60 @@ const VaultExplorer = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* JIT Request Modal */}
+      <Dialog open={showJITRequest} onOpenChange={setShowJITRequest}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request Temporary Access</DialogTitle>
+            <DialogDescription>Request time-limited access to this item</DialogDescription>
+          </DialogHeader>
+          
+          {selectedItem && (
+            <form onSubmit={handleRequestJIT}>
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label>Item</Label>
+                  <p className="text-sm text-[#6b7280] mt-1">{selectedItem.title}</p>
+                </div>
+                
+                <div>
+                  <Label htmlFor="duration">Duration (hours)</Label>
+                  <Select name="duration" defaultValue="2">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 hour</SelectItem>
+                      <SelectItem value="2">2 hours</SelectItem>
+                      <SelectItem value="4">4 hours</SelectItem>
+                      <SelectItem value="8">8 hours</SelectItem>
+                      <SelectItem value="24">24 hours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="reason">Reason for Access</Label>
+                  <textarea 
+                    id="reason" 
+                    name="reason" 
+                    required
+                    className="w-full min-h-[80px] px-3 py-2 border border-[#e5e7eb] rounded-lg mt-1"
+                    placeholder="Explain why you need temporary access..."
+                  />
+                </div>
+              </div>
+              
+              <DialogFooter>
+                <Button type="submit" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">
+                  Submit Request
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
