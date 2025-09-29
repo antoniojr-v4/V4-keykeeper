@@ -762,6 +762,148 @@ async def deny_jit_request(request_id: str, current_user: User = Depends(get_cur
     return {"message": "Request denied"}
 
 
+# ============= BREAK-GLASS ROUTES =============
+
+@api_router.post("/breakglass/request", response_model=BreakGlassRequest)
+async def create_breakglass_request(item_id: str, vault_id: str, reason: str, current_user: User = Depends(get_current_user), request: Request = None):
+    """Create break-glass emergency access request"""
+    bg_request = BreakGlassRequest(
+        requester_id=current_user.id,
+        item_id=item_id,
+        vault_id=vault_id,
+        reason=reason
+    )
+    
+    await db.breakglass_requests.insert_one(bg_request.dict())
+    
+    await log_audit('breakglass_requested', current_user, request, item_id=item_id, vault_id=vault_id, details={'reason': reason, 'request_id': bg_request.id})
+    
+    # Send critical notification
+    item = await db.items.find_one({'id': item_id})
+    vault = await db.vaults.find_one({'id': vault_id})
+    message = f"🚨 BREAK-GLASS REQUEST\n\nUser: {current_user.name} ({current_user.email})\nItem: {item['title'] if item else 'Unknown'}\nVault: {vault['path'] if vault else 'Unknown'}\nReason: {reason}\n\n⚠️ Requires TWO approvals!"
+    await send_google_chat_notification(message)
+    
+    return bg_request
+
+@api_router.get("/breakglass/requests", response_model=List[BreakGlassRequest])
+async def get_breakglass_requests(status: Optional[str] = None, current_user: User = Depends(get_current_user)):
+    """Get break-glass requests (Admin/Manager only)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can view break-glass requests")
+    
+    query = {}
+    if status:
+        query['status'] = status
+    
+    requests = await db.breakglass_requests.find(query).sort('created_at', -1).to_list(100)
+    return [BreakGlassRequest(**req) for req in requests]
+
+@api_router.post("/breakglass/{request_id}/approve")
+async def approve_breakglass_request(request_id: str, current_user: User = Depends(get_current_user), request: Request = None):
+    """Approve break-glass request (requires 2 different approvers)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can approve")
+    
+    bg_request = await db.breakglass_requests.find_one({'id': request_id})
+    if not bg_request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    if bg_request['status'] != 'pending':
+        raise HTTPException(status_code=400, detail="Request already processed")
+    
+    # Check if this is first or second approval
+    if not bg_request.get('approver1_id'):
+        # First approval
+        await db.breakglass_requests.update_one(
+            {'id': request_id},
+            {'$set': {
+                'approver1_id': current_user.id,
+                'approver1_at': datetime.now(timezone.utc)
+            }}
+        )
+        await log_audit('breakglass_approval_1', current_user, request, item_id=bg_request['item_id'], vault_id=bg_request['vault_id'], details={'request_id': request_id})
+        return {"message": "First approval received. Waiting for second approver.", "approvals": 1}
+    
+    elif bg_request['approver1_id'] == current_user.id:
+        raise HTTPException(status_code=400, detail="Same user cannot approve twice")
+    
+    else:
+        # Second approval - grant access
+        await db.breakglass_requests.update_one(
+            {'id': request_id},
+            {'$set': {
+                'approver2_id': current_user.id,
+                'approver2_at': datetime.now(timezone.utc),
+                'status': 'approved',
+                'completed_at': datetime.now(timezone.utc)
+            }}
+        )
+        await log_audit('breakglass_approval_2_granted', current_user, request, item_id=bg_request['item_id'], vault_id=bg_request['vault_id'], details={'request_id': request_id})
+        
+        # Send notification
+        requester = await db.users.find_one({'id': bg_request['requester_id']})
+        item = await db.items.find_one({'id': bg_request['item_id']})
+        message = f"✅ BREAK-GLASS APPROVED\n\nRequester: {requester['name'] if requester else 'Unknown'}\nItem: {item['title'] if item else 'Unknown'}\nApprover 1: {bg_request['approver1_id']}\nApprover 2: {current_user.id}\n\n🔓 Emergency access granted!"
+        await send_google_chat_notification(message)
+        
+        return {"message": "Break-glass access granted", "approvals": 2}
+
+
+# ============= CHECK-OUT/CHECK-IN ROUTES =============
+
+@api_router.post("/items/{item_id}/checkout")
+async def checkout_item(item_id: str, current_user: User = Depends(get_current_user), request: Request = None):
+    """Check-out item (lock for exclusive use)"""
+    item = await db.items.find_one({'id': item_id})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    if not item.get('requires_checkout'):
+        raise HTTPException(status_code=400, detail="This item does not require check-out")
+    
+    if item.get('checked_out_by'):
+        checked_out_user = await db.users.find_one({'id': item['checked_out_by']})
+        raise HTTPException(status_code=409, detail=f"Item already checked out by {checked_out_user['name'] if checked_out_user else 'another user'}")
+    
+    await db.items.update_one(
+        {'id': item_id},
+        {'$set': {
+            'checked_out_by': current_user.id,
+            'checked_out_at': datetime.now(timezone.utc)
+        }}
+    )
+    
+    await log_audit('item_checked_out', current_user, request, item_id=item_id, vault_id=item['vault_id'], details={'title': item['title']})
+    
+    return {"message": "Item checked out successfully", "checked_out_by": current_user.name}
+
+@api_router.post("/items/{item_id}/checkin")
+async def checkin_item(item_id: str, current_user: User = Depends(get_current_user), request: Request = None):
+    """Check-in item (release lock)"""
+    item = await db.items.find_one({'id': item_id})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    if not item.get('checked_out_by'):
+        raise HTTPException(status_code=400, detail="Item is not checked out")
+    
+    if item['checked_out_by'] != current_user.id and current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only the user who checked out can check in (or admin/manager)")
+    
+    await db.items.update_one(
+        {'id': item_id},
+        {'$set': {
+            'checked_out_by': None,
+            'checked_out_at': None
+        }}
+    )
+    
+    await log_audit('item_checked_in', current_user, request, item_id=item_id, vault_id=item['vault_id'], details={'title': item['title']})
+    
+    return {"message": "Item checked in successfully"}
+
+
 # ============= IMPORT ROUTES =============
 
 @api_router.post("/import/sheets")
