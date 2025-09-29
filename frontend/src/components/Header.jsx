@@ -1,9 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '@/App';
-import { Bell, ChevronDown } from 'lucide-react';
+import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const Header = ({ title, description }) => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white border-b border-[#e5e7eb] px-8 py-4">
@@ -27,25 +30,56 @@ const Header = ({ title, description }) => {
             <span className="absolute top-1 right-1 w-2 h-2 bg-[#ef4444] rounded-full"></span>
           </button>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-3 px-3 py-2 hover:bg-[#fafafa] rounded-lg cursor-pointer transition-colors" data-testid="user-profile">
-            {user?.avatar_url ? (
-              <img
-                src={user.avatar_url}
-                alt={user.name}
-                className="w-8 h-8 rounded-full"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-[#ff2c2c] flex items-center justify-center text-white font-semibold">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+          {/* User Profile Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-3 px-3 py-2 hover:bg-[#fafafa] rounded-lg cursor-pointer transition-colors" data-testid="user-profile">
+                {user?.avatar_url ? (
+                  <img
+                    src={user.avatar_url}
+                    alt={user.name}
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-[#ff2c2c] flex items-center justify-center text-white font-semibold">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <div className="text-left">
+                  <p className="text-sm font-medium text-[#1f2937]">{user?.name || 'User'}</p>
+                  <p className="text-xs text-[#6b7280] capitalize">{user?.role || 'contributor'}</p>
+                </div>
+                <ChevronDown className="w-4 h-4 text-[#6b7280]" />
               </div>
-            )}
-            <div className="text-left">
-              <p className="text-sm font-medium text-[#1f2937]">{user?.name || 'User'}</p>
-              <p className="text-xs text-[#6b7280] capitalize">{user?.role || 'contributor'}</p>
-            </div>
-            <ChevronDown className="w-4 h-4 text-[#6b7280]" />
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="px-2 py-1.5">
+                <p className="text-sm font-medium text-[#1f2937]">{user?.name}</p>
+                <p className="text-xs text-[#6b7280]">{user?.email}</p>
+              </div>
+              <DropdownMenuSeparator />
+              {(user?.role === 'admin' || user?.role === 'manager') && (
+                <>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/settings')}
+                    data-testid="menu-settings"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuItem 
+                onClick={logout}
+                data-testid="menu-logout"
+                className="text-red-600 focus:text-red-600"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
