@@ -35,8 +35,8 @@ const Login = () => {
 
           <div className="space-y-4 mt-8">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-[#10b981]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Shield className="w-5 h-5 text-[#10b981]" />
+              <div className="w-10 h-10 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-[#ff2c2c]" />
               </div>
               <div>
                 <h3 className="font-semibold text-[#1f2937] mb-1">LGPD Compliant</h3>
@@ -45,8 +45,8 @@ const Login = () => {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-[#10b981]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Lock className="w-5 h-5 text-[#10b981]" />
+              <div className="w-10 h-10 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Lock className="w-5 h-5 text-[#ff2c2c]" />
               </div>
               <div>
                 <h3 className="font-semibold text-[#1f2937] mb-1">Zero-Knowledge Security</h3>
@@ -55,8 +55,8 @@ const Login = () => {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-[#10b981]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Clock className="w-5 h-5 text-[#10b981]" />
+              <div className="w-10 h-10 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-[#ff2c2c]" />
               </div>
               <div>
                 <h3 className="font-semibold text-[#1f2937] mb-1">JIT Access Control</h3>
