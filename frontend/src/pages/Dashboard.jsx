@@ -36,7 +36,7 @@ const Dashboard = () => {
       title: 'Total Items',
       value: stats?.total_items || 0,
       icon: Key,
-      color: 'bg-[#10b981]',
+      color: 'bg-[#ff2c2c]',
       testId: 'stat-total-items'
     },
     {
