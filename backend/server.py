@@ -53,7 +53,7 @@ ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', 'v4-encryption-master-key-32-b
 
 # Generate Fernet key from master key
 def get_fernet_key():
-    kdf = PBKDF2(
+    kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=b'v4company-salt',
