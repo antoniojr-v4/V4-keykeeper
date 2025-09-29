@@ -96,6 +96,7 @@ function App() {
             <Route path="/audit" element={token ? <AuditLogs /> : <Navigate to="/login" />} />
             <Route path="/jit" element={token ? <JITRequests /> : <Navigate to="/login" />} />
             <Route path="/import" element={token ? <ImportPage /> : <Navigate to="/login" />} />
+            <Route path="/settings" element={token ? <Settings /> : <Navigate to="/login" />} />
           </Routes>
         </BrowserRouter>
       </div>
