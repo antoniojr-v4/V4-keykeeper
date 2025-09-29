@@ -468,7 +468,7 @@ const VaultExplorer = () => {
                     <p className="text-[#6b7280] mb-4">No items in this vault yet</p>
                     <Button 
                       onClick={() => setShowCreateItem(true)}
-                      className="bg-[#10b981] hover:bg-[#059669] text-white"
+                      className="bg-[#ff2c2c] hover:bg-[#e61919] text-white"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Create First Item
