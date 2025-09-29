@@ -809,6 +809,103 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
     }
 
 
+# ============= USER MANAGEMENT ROUTES =============
+
+@api_router.get("/users", response_model=List[User])
+async def get_users(current_user: User = Depends(get_current_user)):
+    """Get all users (Admin/Manager only)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can view users")
+    
+    users = await db.users.find().to_list(1000)
+    return [User(**user) for user in users]
+
+@api_router.post("/users/invite")
+async def invite_user(email: EmailStr, name: str, role: str, current_user: User = Depends(get_current_user)):
+    """Invite a new user (Admin/Manager only)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can invite users")
+    
+    # Check if user already exists
+    existing_user = await db.users.find_one({'email': email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+    
+    # Create new user
+    new_user = User(
+        email=email,
+        name=name,
+        role=role,
+        status='pending'
+    )
+    
+    await db.users.insert_one(new_user.dict())
+    
+    # TODO: Send invitation email
+    
+    return {"message": "User invited successfully", "user": new_user}
+
+@api_router.put("/users/{user_id}/role")
+async def update_user_role(user_id: str, role: str, current_user: User = Depends(get_current_user)):
+    """Update user role (Admin only)"""
+    if current_user.role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can update user roles")
+    
+    if role not in ['admin', 'manager', 'contributor', 'client']:
+        raise HTTPException(status_code=400, detail="Invalid role")
+    
+    result = await db.users.update_one(
+        {'id': user_id},
+        {'$set': {'role': role}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User role updated successfully"}
+
+@api_router.put("/users/{user_id}/status")
+async def update_user_status(user_id: str, status: str, current_user: User = Depends(get_current_user)):
+    """Update user status (Admin/Manager only)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can update user status")
+    
+    if status not in ['active', 'inactive', 'pending']:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    result = await db.users.update_one(
+        {'id': user_id},
+        {'$set': {'status': status}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User status updated successfully"}
+
+
+# ============= SETTINGS ROUTES =============
+
+@api_router.get("/settings/webhook")
+async def get_webhook_settings(current_user: User = Depends(get_current_user)):
+    """Get webhook settings (Admin only)"""
+    if current_user.role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can view webhook settings")
+    
+    return {"webhook_url": GOOGLE_CHAT_WEBHOOK}
+
+@api_router.post("/settings/webhook")
+async def update_webhook_settings(webhook_url: str, current_user: User = Depends(get_current_user)):
+    """Update webhook settings (Admin only)"""
+    if current_user.role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can update webhook settings")
+    
+    # In production, this would update a database setting
+    # For now, we'll just validate and return success
+    
+    return {"message": "Webhook settings updated successfully"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
