@@ -464,6 +464,103 @@ async def delete_vault(vault_id: str, current_user: User = Depends(get_current_u
     
     return {"message": "Vault deleted successfully"}
 
+@api_router.post("/vaults/{vault_id}/generate-client-link")
+async def generate_client_link(vault_id: str, current_user: User = Depends(get_current_user)):
+    """Generate shareable link for client to add items (Admin/Manager only)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can generate client links")
+    
+    vault = await db.vaults.find_one({'id': vault_id})
+    if not vault:
+        raise HTTPException(status_code=404, detail="Vault not found")
+    
+    if vault['type'] != 'client':
+        raise HTTPException(status_code=400, detail="Only client-type vaults can have shareable links")
+    
+    # Generate secure token
+    share_token = hashlib.sha256(f"{vault_id}-{datetime.now(timezone.utc).isoformat()}".encode()).hexdigest()
+    
+    await db.vaults.update_one(
+        {'id': vault_id},
+        {'$set': {
+            'client_share_token': share_token,
+            'client_share_enabled': True
+        }}
+    )
+    
+    frontend_url = os.environ.get('FRONTEND_URL', 'https://keykeeper-9.preview.emergentagent.com')
+    share_url = f"{frontend_url}/client-submit/{share_token}"
+    
+    return {"share_url": share_url, "token": share_token}
+
+@api_router.get("/vaults/by-token/{token}")
+async def get_vault_by_token(token: str):
+    """Get vault info by share token (public access)"""
+    vault = await db.vaults.find_one({'client_share_token': token, 'client_share_enabled': True})
+    if not vault:
+        raise HTTPException(status_code=404, detail="Invalid or expired link")
+    
+    return {
+        'vault_id': vault['id'],
+        'vault_name': vault['name'],
+        'client_name': vault['tags'].get('client', 'Client')
+    }
+
+@api_router.post("/vaults/client-submit/{token}/item")
+async def client_submit_item(token: str, item_data: ItemCreate):
+    """Allow client to submit item via shareable link (no auth required)"""
+    vault = await db.vaults.find_one({'client_share_token': token, 'client_share_enabled': True})
+    if not vault:
+        raise HTTPException(status_code=404, detail="Invalid or expired link")
+    
+    # Force vault_id from token
+    item_data.vault_id = vault['id']
+    
+    # Encrypt sensitive fields
+    password_encrypted = None
+    if item_data.password:
+        password_encrypted = encrypt_data(item_data.password)
+    
+    notes_encrypted = None
+    if item_data.notes:
+        notes_encrypted = encrypt_data(item_data.notes)
+    
+    item = Item(
+        vault_id=vault['id'],
+        type=item_data.type,
+        title=item_data.title,
+        login=item_data.login,
+        password_encrypted=password_encrypted,
+        login_url=item_data.login_url,
+        metadata=item_data.metadata,
+        owner_id='client-submitted',  # Special owner for client submissions
+        environment=item_data.environment,
+        criticality=item_data.criticality,
+        expires_at=item_data.expires_at,
+        tags=item_data.tags,
+        notes_encrypted=notes_encrypted,
+        login_instructions=item_data.login_instructions,
+        no_copy=item_data.no_copy,
+        requires_checkout=item_data.requires_checkout,
+        created_by='client-submitted',
+        updated_by='client-submitted'
+    )
+    
+    await db.items.insert_one(item.dict())
+    
+    # Log without user context
+    log_entry = AuditLog(
+        event_type='client_item_submitted',
+        user_id='client',
+        user_email=vault['tags'].get('client', 'unknown'),
+        item_id=item.id,
+        vault_id=vault['id'],
+        details={'title': item.title, 'via_share_link': True}
+    )
+    await db.audit_logs.insert_one(log_entry.dict())
+    
+    return {"message": "Item submitted successfully", "item_id": item.id}
+
 
 # ============= ITEM ROUTES =============
 
