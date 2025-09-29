@@ -79,8 +79,9 @@ const AuditLogs = () => {
                       <th className="px-4 py-3">Timestamp</th>
                       <th className="px-4 py-3">Event</th>
                       <th className="px-4 py-3">User</th>
+                      <th className="px-4 py-3">Vault</th>
+                      <th className="px-4 py-3">Item</th>
                       <th className="px-4 py-3">IP Address</th>
-                      <th className="px-4 py-3">Details</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#e5e7eb]">
@@ -99,10 +100,13 @@ const AuditLogs = () => {
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-sm text-[#1f2937]">{log.user_email}</td>
-                        <td className="px-4 py-3 text-sm text-[#6b7280]">{log.ip_address || 'N/A'}</td>
                         <td className="px-4 py-3 text-sm text-[#6b7280]">
-                          {log.details?.title || log.details?.name || 'N/A'}
+                          {log.details?.vault_name || 'N/A'}
                         </td>
+                        <td className="px-4 py-3 text-sm text-[#6b7280]">
+                          {log.details?.item_title || log.details?.title || log.details?.name || 'N/A'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-[#6b7280]">{log.ip_address || 'N/A'}</td>
                       </tr>
                     ))}
                   </tbody>
