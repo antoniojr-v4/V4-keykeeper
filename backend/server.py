@@ -620,7 +620,25 @@ async def get_audit_logs(
         query['vault_id'] = vault_id
     
     logs = await db.audit_logs.find(query).sort('timestamp', -1).limit(limit).to_list(limit)
-    return [AuditLog(**log) for log in logs]
+    
+    # Enrich logs with vault and item names
+    enriched_logs = []
+    for log in logs:
+        log_dict = AuditLog(**log).dict()
+        
+        # Add vault name
+        if log.get('vault_id'):
+            vault = await db.vaults.find_one({'id': log['vault_id']})
+            log_dict['details']['vault_name'] = vault['name'] if vault else 'Unknown Vault'
+        
+        # Add item title
+        if log.get('item_id'):
+            item = await db.items.find_one({'id': log['item_id']})
+            log_dict['details']['item_title'] = item['title'] if item else log_dict['details'].get('title', 'Unknown Item')
+        
+        enriched_logs.append(AuditLog(**log_dict))
+    
+    return enriched_logs
 
 
 # ============= JIT ROUTES =============
