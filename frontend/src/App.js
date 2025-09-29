@@ -100,6 +100,7 @@ function App() {
             <Route path="/import" element={token ? <ImportPage /> : <Navigate to="/login" />} />
             <Route path="/settings" element={token ? <Settings /> : <Navigate to="/login" />} />
             <Route path="/breakglass" element={token ? <BreakGlass /> : <Navigate to="/login" />} />
+            <Route path="/client-submit/:token" element={<ClientSubmit />} />
           </Routes>
         </BrowserRouter>
       </div>
