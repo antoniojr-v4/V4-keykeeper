@@ -130,7 +130,7 @@ const JITRequests = () => {
                             onClick={() => handleApprove(request.id)}
                             data-testid={`approve-jit-${index}`}
                             size="sm"
-                            className="bg-[#10b981] hover:bg-[#059669] text-white"
+                            className="bg-[#ff2c2c] hover:bg-[#e61919] text-white"
                           >
                             <Check className="w-4 h-4 mr-1" />
                             Approve
