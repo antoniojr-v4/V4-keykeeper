@@ -12,6 +12,7 @@ const Sidebar = () => {
     { path: '/', icon: Home, label: 'Dashboard', testId: 'sidebar-menu-dashboard' },
     { path: '/vaults', icon: FolderLock, label: 'Vaults', testId: 'sidebar-menu-vaults' },
     { path: '/jit', icon: Clock, label: 'JIT Requests', testId: 'sidebar-menu-jit' },
+    { path: '/breakglass', icon: Shield, label: 'Break-Glass', testId: 'sidebar-menu-breakglass', adminOnly: true },
     { path: '/audit', icon: History, label: 'Audit Logs', testId: 'sidebar-menu-audit' },
     { path: '/import', icon: Upload, label: 'Import', testId: 'sidebar-menu-import' },
   ];
