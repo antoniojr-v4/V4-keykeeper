@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { apiClient, AuthContext } from '@/App';
-import { FolderPlus, Plus, Search, Eye, EyeOff, Copy, Edit2, Trash2, ChevronRight, Key, AlertCircle, Clock } from 'lucide-react';
+import { FolderPlus, Plus, Search, Eye, EyeOff, Copy, Edit2, Trash2, ChevronRight, Key, AlertCircle, Clock, Shield, Lock, Unlock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
