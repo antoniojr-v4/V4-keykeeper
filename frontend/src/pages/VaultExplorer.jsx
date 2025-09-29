@@ -669,24 +669,64 @@ const VaultExplorer = () => {
                 </div>
               )}
 
-              <div className="pt-4 border-t border-[#e5e7eb] flex justify-between gap-2">
-                <Button 
-                  onClick={() => setShowJITRequest(true)}
-                  data-testid="request-jit-btn"
-                  variant="outline"
-                  className="border-[#ff2c2c] text-[#ff2c2c] hover:bg-[#ff2c2c] hover:text-white"
-                >
-                  <Clock className="w-4 h-4 mr-2" />
-                  Request Temporary Access
-                </Button>
-                <Button 
-                  onClick={() => handleDeleteItem(selectedItem.id)}
-                  data-testid="delete-item-btn"
-                  variant="destructive"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
-                </Button>
+              <div className="pt-4 border-t border-[#e5e7eb]">
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  {selectedItem.requires_checkout && (
+                    <>
+                      {selectedItem.checked_out_by ? (
+                        <Button 
+                          onClick={handleCheckin}
+                          data-testid="checkin-btn"
+                          variant="outline"
+                          className="border-green-500 text-green-700 hover:bg-green-50"
+                        >
+                          <Unlock className="w-4 h-4 mr-2" />
+                          Check-in
+                        </Button>
+                      ) : (
+                        <Button 
+                          onClick={handleCheckout}
+                          data-testid="checkout-btn"
+                          variant="outline"
+                          className="border-blue-500 text-blue-700 hover:bg-blue-50"
+                        >
+                          <Lock className="w-4 h-4 mr-2" />
+                          Check-out
+                        </Button>
+                      )}
+                    </>
+                  )}
+                  
+                  <Button 
+                    onClick={handleRequestBreakGlass}
+                    data-testid="breakglass-btn"
+                    variant="outline"
+                    className="border-red-500 text-red-700 hover:bg-red-50"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Emergency Access
+                  </Button>
+                </div>
+
+                <div className="flex justify-between gap-2">
+                  <Button 
+                    onClick={() => setShowJITRequest(true)}
+                    data-testid="request-jit-btn"
+                    variant="outline"
+                    className="border-[#ff2c2c] text-[#ff2c2c] hover:bg-[#ff2c2c] hover:text-white"
+                  >
+                    <Clock className="w-4 h-4 mr-2" />
+                    Request Temporary Access
+                  </Button>
+                  <Button 
+                    onClick={() => handleDeleteItem(selectedItem.id)}
+                    data-testid="delete-item-btn"
+                    variant="destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </Button>
+                </div>
               </div>
             </div>
           )}
