@@ -189,6 +189,8 @@ class ItemCreate(BaseModel):
     tags: Dict[str, str] = {}
     notes: Optional[str] = None
     login_instructions: Optional[str] = None
+    no_copy: bool = False
+    requires_checkout: bool = False
 
 class ItemUpdate(BaseModel):
     title: Optional[str] = None
