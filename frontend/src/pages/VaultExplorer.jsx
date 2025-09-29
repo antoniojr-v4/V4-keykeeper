@@ -439,12 +439,12 @@ const VaultExplorer = () => {
                           setShowItemDetail(true);
                           setRevealedPassword(null);
                         }}
-                        className="bg-white rounded-xl p-4 shadow-sm border border-[#e5e7eb] hover:border-[#10b981] hover:shadow-md transition-all cursor-pointer"
+                        className="bg-white rounded-xl p-4 shadow-sm border border-[#e5e7eb] hover:border-[#ff2c2c] hover:shadow-md transition-all cursor-pointer"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-[#10b981]/10 rounded-lg flex items-center justify-center">
-                              <Key className="w-5 h-5 text-[#10b981]" />
+                            <div className="w-10 h-10 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center">
+                              <Key className="w-5 h-5 text-[#ff2c2c]" />
                             </div>
                           </div>
                           <div className="flex gap-1">
