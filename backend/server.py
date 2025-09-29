@@ -95,6 +95,11 @@ class Vault(BaseModel):
     owner_id: str
     acl: List[Dict[str, Any]] = []
     tags: Dict[str, str] = {}
+    
+    # Client access features
+    client_share_token: Optional[str] = None  # Token for client access
+    client_share_enabled: bool = False
+    
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
