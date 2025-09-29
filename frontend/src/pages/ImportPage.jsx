@@ -108,7 +108,7 @@ const ImportPage = () => {
                     <Button
                       as="div"
                       disabled={importing}
-                      className="w-full bg-[#10b981] hover:bg-[#059669] text-white cursor-pointer"
+                      className="w-full bg-[#ff2c2c] hover:bg-[#e61919] text-white cursor-pointer"
                     >
                       <Upload className="w-4 h-4 mr-2" />
                       {importing ? 'Importing...' : 'Upload CSV'}
