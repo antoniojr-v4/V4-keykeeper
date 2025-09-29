@@ -98,6 +98,7 @@ function App() {
             <Route path="/jit" element={token ? <JITRequests /> : <Navigate to="/login" />} />
             <Route path="/import" element={token ? <ImportPage /> : <Navigate to="/login" />} />
             <Route path="/settings" element={token ? <Settings /> : <Navigate to="/login" />} />
+            <Route path="/breakglass" element={token ? <BreakGlass /> : <Navigate to="/login" />} />
           </Routes>
         </BrowserRouter>
       </div>
