@@ -549,7 +549,7 @@ const VaultExplorer = () => {
                     <Button 
                       onClick={() => handleRevealPassword(selectedItem.id)}
                       data-testid="reveal-password-btn"
-                      className="bg-[#10b981] hover:bg-[#059669] text-white"
+                      className="bg-[#ff2c2c] hover:bg-[#e61919] text-white"
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       Reveal Password
