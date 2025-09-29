@@ -115,10 +115,31 @@ class Item(BaseModel):
     attachments: List[Dict[str, Any]] = []
     notes_encrypted: Optional[str] = None
     login_instructions: Optional[str] = None
+    
+    # New security features
+    no_copy: bool = False  # Prevent copy/paste
+    requires_checkout: bool = False  # Check-out/check-in flow
+    checked_out_by: Optional[str] = None
+    checked_out_at: Optional[datetime] = None
+    
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_by: str
     updated_by: str
+
+class BreakGlassRequest(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    requester_id: str
+    item_id: str
+    vault_id: str
+    reason: str
+    status: str = "pending"  # pending, approved, denied, completed
+    approver1_id: Optional[str] = None
+    approver1_at: Optional[datetime] = None
+    approver2_id: Optional[str] = None
+    approver2_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class AuditLog(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
