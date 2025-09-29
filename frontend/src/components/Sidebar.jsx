@@ -42,7 +42,7 @@ const Sidebar = () => {
               data-testid={item.testId}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive
-                  ? 'bg-[#10b981] text-white'
+                  ? 'bg-[#ff2c2c] text-white'
                   : 'text-gray-300 hover:bg-[#2d2d2d] hover:text-white'
               }`}
             >
