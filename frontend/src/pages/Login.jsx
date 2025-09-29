@@ -23,7 +23,7 @@ const Login = () => {
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <img 
-              src="https://customer-assets.emergentagent.com/job_keykeeper-9/artifacts/0r1wv7ei_image.png" 
+              src="https://customer-assets.emergentagent.com/job_keykeeper-9/artifacts/vspn4e79_Canecas.png" 
               alt="V4 Logo" 
               className="w-16 h-16"
             />
