@@ -347,6 +347,25 @@ const VaultExplorer = () => {
               <>
                 {/* Filters and Search */}
                 <div className="bg-white rounded-xl p-4 mb-6 shadow-sm border border-[#e5e7eb]">
+                  {/* Show client link button if vault is type client */}
+                  {selectedVault.type === 'client' && (
+                    <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">Client Vault</p>
+                        <p className="text-xs text-blue-700">Generate a secure link for clients to submit credentials</p>
+                      </div>
+                      <Button
+                        onClick={handleGenerateClientLink}
+                        data-testid="generate-client-link-btn"
+                        size="sm"
+                        variant="outline"
+                        className="border-blue-500 text-blue-700 hover:bg-blue-50"
+                      >
+                        Generate Client Link
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[200px]">
                       <div className="relative">
