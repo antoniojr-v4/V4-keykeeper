@@ -26,6 +26,7 @@ const VaultExplorer = () => {
   const [showCreateVault, setShowCreateVault] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [showItemDetail, setShowItemDetail] = useState(false);
+  const [showJITRequest, setShowJITRequest] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [revealedPassword, setRevealedPassword] = useState(null);
 
