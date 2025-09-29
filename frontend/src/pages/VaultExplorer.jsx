@@ -234,7 +234,7 @@ const VaultExplorer = () => {
                   onClick={() => setSelectedVault(vault)}
                   className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
                     selectedVault?.id === vault.id
-                      ? 'bg-[#10b981] text-white'
+                      ? 'bg-[#ff2c2c] text-white'
                       : 'hover:bg-[#fafafa] text-[#1f2937]'
                   }`}
                 >
