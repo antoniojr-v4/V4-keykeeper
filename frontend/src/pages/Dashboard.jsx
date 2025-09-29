@@ -102,10 +102,10 @@ const Dashboard = () => {
                   key={index}
                   to={card.link}
                   data-testid={card.testId}
-                  className="bg-white rounded-xl p-6 shadow-sm border border-[#e5e7eb] hover:border-[#10b981] hover:shadow-md transition-all group"
+                  className="bg-white rounded-xl p-6 shadow-sm border border-[#e5e7eb] hover:border-[#ff2c2c] hover:shadow-md transition-all group"
                 >
-                  <div className="w-12 h-12 bg-[#10b981]/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-[#10b981] transition-colors">
-                    <card.icon className="w-6 h-6 text-[#10b981] group-hover:text-white transition-colors" />
+                  <div className="w-12 h-12 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-[#ff2c2c] transition-colors">
+                    <card.icon className="w-6 h-6 text-[#ff2c2c] group-hover:text-white transition-colors" />
                   </div>
                   <h3 className="font-semibold text-[#1f2937] mb-2">{card.title}</h3>
                   <p className="text-sm text-[#6b7280]">{card.description}</p>
