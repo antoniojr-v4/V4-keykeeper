@@ -113,7 +113,9 @@ const VaultExplorer = () => {
           squad: formData.get('squad') || ''
         },
         notes: formData.get('notes'),
-        login_instructions: formData.get('login_instructions')
+        login_instructions: formData.get('login_instructions'),
+        no_copy: formData.get('no_copy') === 'on',
+        requires_checkout: formData.get('requires_checkout') === 'on'
       });
       
       toast.success('Item created successfully');
