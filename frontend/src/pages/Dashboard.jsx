@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user, setUser } = useContext(AuthContext);
 
   useEffect(() => {
     fetchStats();
@@ -21,6 +22,23 @@ const Dashboard = () => {
       console.error('Error fetching stats:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleMakeMeAdmin = async () => {
+    try {
+      const response = await apiClient.post('/admin/make-me-admin');
+      toast.success(response.data.message);
+      
+      // Update user in context
+      const userResponse = await apiClient.get('/auth/me');
+      setUser(userResponse.data);
+      
+      // Reload page to show admin features
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      console.error('Error making admin:', error);
+      toast.error('Failed to update role');
     }
   };
 
