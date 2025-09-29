@@ -780,11 +780,59 @@ async def create_breakglass_request(item_id: str, vault_id: str, reason: str, cu
     
     await log_audit('breakglass_requested', current_user, request, item_id=item_id, vault_id=vault_id, details={'reason': reason, 'request_id': bg_request.id})
     
-    # Send critical notification
+    # Send critical notification with action buttons
     item = await db.items.find_one({'id': item_id})
     vault = await db.vaults.find_one({'id': vault_id})
-    message = f"🚨 BREAK-GLASS REQUEST\n\nUser: {current_user.name} ({current_user.email})\nItem: {item['title'] if item else 'Unknown'}\nVault: {vault['path'] if vault else 'Unknown'}\nReason: {reason}\n\n⚠️ Requires TWO approvals!"
-    await send_google_chat_notification(message)
+    
+    # Google Chat message with buttons
+    chat_message = {
+        "text": f"🚨 BREAK-GLASS REQUEST",
+        "cards": [{
+            "header": {
+                "title": "Emergency Access Request",
+                "subtitle": f"Request ID: {bg_request.id[:8]}",
+                "imageUrl": "https://www.gstatic.com/images/icons/material/system/1x/warning_amber_24dp.png"
+            },
+            "sections": [{
+                "widgets": [
+                    {"keyValue": {"topLabel": "Requester", "content": f"{current_user.name} ({current_user.email})"}},
+                    {"keyValue": {"topLabel": "Item", "content": item['title'] if item else 'Unknown'}},
+                    {"keyValue": {"topLabel": "Vault", "content": vault['path'] if vault else 'Unknown'}},
+                    {"keyValue": {"topLabel": "Reason", "content": reason}},
+                    {"buttons": [
+                        {
+                            "textButton": {
+                                "text": "APPROVE",
+                                "onClick": {
+                                    "openLink": {
+                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://keykeeper-9.preview.emergentagent.com')}/breakglass"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "textButton": {
+                                "text": "DENY",
+                                "onClick": {
+                                    "openLink": {
+                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://keykeeper-9.preview.emergentagent.com')}/breakglass"
+                                    }
+                                }
+                            }
+                        }
+                    ]}
+                ]
+            }]
+        }]
+    }
+    
+    # Send to webhook
+    if GOOGLE_CHAT_WEBHOOK:
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.post(GOOGLE_CHAT_WEBHOOK, json=chat_message, timeout=10.0)
+        except Exception as e:
+            logger.error(f"Failed to send Google Chat notification: {str(e)}")
     
     return bg_request
 
