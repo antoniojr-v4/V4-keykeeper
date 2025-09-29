@@ -181,7 +181,7 @@ const VaultExplorer = () => {
               <h3 className="font-semibold text-[#1f2937]">Vaults</h3>
               <Dialog open={showCreateVault} onOpenChange={setShowCreateVault}>
                 <DialogTrigger asChild>
-                  <Button size="sm" data-testid="create-vault-btn" className="bg-[#10b981] hover:bg-[#059669] text-white">
+                  <Button size="sm" data-testid="create-vault-btn" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">
                     <FolderPlus className="w-4 h-4" />
                   </Button>
                 </DialogTrigger>
