@@ -219,7 +219,7 @@ const VaultExplorer = () => {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="submit" className="bg-[#10b981] hover:bg-[#059669] text-white">Create Vault</Button>
+                      <Button type="submit" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">Create Vault</Button>
                     </DialogFooter>
                   </form>
                 </DialogContent>
