@@ -155,6 +155,26 @@ const VaultExplorer = () => {
     }
   };
 
+  const handleRequestJIT = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    try {
+      await apiClient.post('/jit/request', {
+        item_id: selectedItem.id,
+        vault_id: selectedItem.vault_id,
+        reason: formData.get('reason'),
+        requested_duration_hours: parseInt(formData.get('duration'))
+      });
+      
+      toast.success('JIT access requested successfully');
+      setShowJITRequest(false);
+    } catch (error) {
+      console.error('Error requesting JIT:', error);
+      toast.error('Failed to request JIT access');
+    }
+  };
+
   const getCriticalityColor = (crit) => {
     switch (crit) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
