@@ -516,7 +516,7 @@ const VaultExplorer = () => {
                     href={selectedItem.login_url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-sm text-[#10b981] hover:underline mt-1 block"
+                    className="text-sm text-[#ff2c2c] hover:underline mt-1 block"
                   >
                     {selectedItem.login_url}
                   </a>
