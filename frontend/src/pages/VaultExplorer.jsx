@@ -224,6 +224,25 @@ const VaultExplorer = () => {
     }
   };
 
+  const handleGenerateClientLink = async () => {
+    if (!selectedVault) return;
+    
+    try {
+      const response = await apiClient.post(`/vaults/${selectedVault.id}/generate-client-link`);
+      setClientShareUrl(response.data.share_url);
+      setShowShareModal(true);
+      toast.success('Client link generated successfully');
+    } catch (error) {
+      console.error('Error generating link:', error);
+      toast.error(error.response?.data?.detail || 'Failed to generate link');
+    }
+  };
+
+  const copyShareUrl = () => {
+    navigator.clipboard.writeText(clientShareUrl);
+    toast.success('Link copied to clipboard');
+  };
+
   const getCriticalityColor = (crit) => {
     switch (crit) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
