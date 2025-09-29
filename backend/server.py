@@ -803,7 +803,7 @@ async def get_breakglass_requests(status: Optional[str] = None, current_user: Us
 
 @api_router.post("/breakglass/{request_id}/approve")
 async def approve_breakglass_request(request_id: str, current_user: User = Depends(get_current_user), request: Request = None):
-    """Approve break-glass request (requires 2 different approvers)"""
+    """Approve break-glass request (requires 1 admin/manager)"""
     if current_user.role not in ['admin', 'manager']:
         raise HTTPException(status_code=403, detail="Only admins and managers can approve")
     
@@ -814,42 +814,51 @@ async def approve_breakglass_request(request_id: str, current_user: User = Depen
     if bg_request['status'] != 'pending':
         raise HTTPException(status_code=400, detail="Request already processed")
     
-    # Check if this is first or second approval
-    if not bg_request.get('approver1_id'):
-        # First approval
-        await db.breakglass_requests.update_one(
-            {'id': request_id},
-            {'$set': {
-                'approver1_id': current_user.id,
-                'approver1_at': datetime.now(timezone.utc)
-            }}
-        )
-        await log_audit('breakglass_approval_1', current_user, request, item_id=bg_request['item_id'], vault_id=bg_request['vault_id'], details={'request_id': request_id})
-        return {"message": "First approval received. Waiting for second approver.", "approvals": 1}
+    # Approve with single approval
+    await db.breakglass_requests.update_one(
+        {'id': request_id},
+        {'$set': {
+            'approver1_id': current_user.id,
+            'approver1_at': datetime.now(timezone.utc),
+            'status': 'approved',
+            'completed_at': datetime.now(timezone.utc)
+        }}
+    )
+    await log_audit('breakglass_approved', current_user, request, item_id=bg_request['item_id'], vault_id=bg_request['vault_id'], details={'request_id': request_id})
     
-    elif bg_request['approver1_id'] == current_user.id:
-        raise HTTPException(status_code=400, detail="Same user cannot approve twice")
+    # Send notification
+    requester = await db.users.find_one({'id': bg_request['requester_id']})
+    item = await db.items.find_one({'id': bg_request['item_id']})
+    message = f"✅ BREAK-GLASS APPROVED\n\nRequester: {requester['name'] if requester else 'Unknown'}\nItem: {item['title'] if item else 'Unknown'}\nApproved by: {current_user.name}\n\n🔓 Emergency access granted!"
+    await send_google_chat_notification(message)
     
-    else:
-        # Second approval - grant access
-        await db.breakglass_requests.update_one(
-            {'id': request_id},
-            {'$set': {
-                'approver2_id': current_user.id,
-                'approver2_at': datetime.now(timezone.utc),
-                'status': 'approved',
-                'completed_at': datetime.now(timezone.utc)
-            }}
-        )
-        await log_audit('breakglass_approval_2_granted', current_user, request, item_id=bg_request['item_id'], vault_id=bg_request['vault_id'], details={'request_id': request_id})
-        
-        # Send notification
-        requester = await db.users.find_one({'id': bg_request['requester_id']})
-        item = await db.items.find_one({'id': bg_request['item_id']})
-        message = f"✅ BREAK-GLASS APPROVED\n\nRequester: {requester['name'] if requester else 'Unknown'}\nItem: {item['title'] if item else 'Unknown'}\nApprover 1: {bg_request['approver1_id']}\nApprover 2: {current_user.id}\n\n🔓 Emergency access granted!"
-        await send_google_chat_notification(message)
-        
-        return {"message": "Break-glass access granted", "approvals": 2}
+    return {"message": "Break-glass access granted"}
+
+@api_router.post("/breakglass/{request_id}/deny")
+async def deny_breakglass_request(request_id: str, current_user: User = Depends(get_current_user), request: Request = None):
+    """Deny break-glass request"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can deny")
+    
+    bg_request = await db.breakglass_requests.find_one({'id': request_id})
+    if not bg_request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    if bg_request['status'] != 'pending':
+        raise HTTPException(status_code=400, detail="Request already processed")
+    
+    await db.breakglass_requests.update_one(
+        {'id': request_id},
+        {'$set': {
+            'status': 'denied',
+            'approver1_id': current_user.id,
+            'approver1_at': datetime.now(timezone.utc)
+        }}
+    )
+    
+    await log_audit('breakglass_denied', current_user, request, item_id=bg_request['item_id'], vault_id=bg_request['vault_id'], details={'request_id': request_id})
+    
+    return {"message": "Break-glass request denied"}
 
 
 # ============= CHECK-OUT/CHECK-IN ROUTES =============
