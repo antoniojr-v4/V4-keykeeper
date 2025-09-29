@@ -19,10 +19,14 @@ const Sidebar = () => {
     <div className="w-64 bg-[#1e1e1e] min-h-screen flex flex-col text-white">
       {/* Logo */}
       <div className="p-6 border-b border-[#2d2d2d]">
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <FolderLock className="w-6 h-6 text-[#10b981]" />
-          <span>V4 KeyKeeper</span>
-        </h1>
+        <div className="flex items-center gap-3">
+          <img 
+            src="https://customer-assets.emergentagent.com/job_keykeeper-9/artifacts/0r1wv7ei_image.png" 
+            alt="V4 Logo" 
+            className="w-8 h-8"
+          />
+          <h1 className="text-xl font-bold">V4 KeyKeeper</h1>
+        </div>
       </div>
 
       {/* Menu Items */}
