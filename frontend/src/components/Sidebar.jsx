@@ -58,6 +58,11 @@ const Sidebar = () => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
           
+          // Hide admin-only items if not admin/manager
+          if (item.adminOnly && user?.role !== 'admin' && user?.role !== 'manager') {
+            return null;
+          }
+          
           return (
             <Link
               key={item.path}
