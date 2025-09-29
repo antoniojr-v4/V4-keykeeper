@@ -597,7 +597,16 @@ const VaultExplorer = () => {
                 </div>
               )}
 
-              <div className="pt-4 border-t border-[#e5e7eb] flex justify-end gap-2">
+              <div className="pt-4 border-t border-[#e5e7eb] flex justify-between gap-2">
+                <Button 
+                  onClick={() => setShowJITRequest(true)}
+                  data-testid="request-jit-btn"
+                  variant="outline"
+                  className="border-[#ff2c2c] text-[#ff2c2c] hover:bg-[#ff2c2c] hover:text-white"
+                >
+                  <Clock className="w-4 h-4 mr-2" />
+                  Request Temporary Access
+                </Button>
                 <Button 
                   onClick={() => handleDeleteItem(selectedItem.id)}
                   data-testid="delete-item-btn"
