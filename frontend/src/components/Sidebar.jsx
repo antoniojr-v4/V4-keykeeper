@@ -41,14 +41,14 @@ const Sidebar = () => {
       </div>
 
       {/* Toggle Button */}
-      <div className="px-4 py-3 border-b border-[#2d2d2d]">
+      <div className="px-4 py-3 border-b border-[#2d2d2d] flex justify-center">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           data-testid="toggle-sidebar-btn"
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg hover:bg-[#2d2d2d] transition-colors text-gray-300"
+          className="p-2 rounded-lg hover:bg-[#2d2d2d] transition-colors text-gray-300"
+          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-          {!isCollapsed && <span className="text-sm">Collapse</span>}
         </button>
       </div>
 
