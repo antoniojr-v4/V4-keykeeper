@@ -311,7 +311,7 @@ const VaultExplorer = () => {
 
                     <Dialog open={showCreateItem} onOpenChange={setShowCreateItem}>
                       <DialogTrigger asChild>
-                        <Button data-testid="create-item-btn" className="bg-[#10b981] hover:bg-[#059669] text-white">
+                        <Button data-testid="create-item-btn" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">
                           <Plus className="w-4 h-4 mr-2" />
                           New Item
                         </Button>
