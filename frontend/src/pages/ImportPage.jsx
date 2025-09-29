@@ -70,7 +70,7 @@ const ImportPage = () => {
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="bg-white rounded-xl p-8 shadow-sm border border-[#e5e7eb]">
               <div className="text-center mb-6">
-                <Upload className="w-16 h-16 text-[#10b981] mx-auto mb-4" />
+                <Upload className="w-16 h-16 text-[#ff2c2c] mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-[#1f2937] mb-2">Import Your Passwords</h2>
                 <p className="text-[#6b7280]">Upload a CSV file with your passwords to bulk import</p>
               </div>
