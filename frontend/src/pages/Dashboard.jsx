@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import { apiClient } from '@/App';
+import { apiClient, AuthContext } from '@/App';
 import { FolderLock, Key, Clock, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
