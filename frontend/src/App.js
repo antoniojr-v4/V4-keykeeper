@@ -10,6 +10,7 @@ import AuditLogs from "@/pages/AuditLogs";
 import JITRequests from "@/pages/JITRequests";
 import ImportPage from "@/pages/ImportPage";
 import Settings from "@/pages/Settings";
+import BreakGlass from "@/pages/BreakGlass";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
