@@ -175,6 +175,51 @@ const VaultExplorer = () => {
     }
   };
 
+  const handleRequestBreakGlass = async () => {
+    const reason = window.prompt('Enter reason for emergency access:');
+    if (!reason) return;
+    
+    try {
+      await apiClient.post('/breakglass/request', null, {
+        params: {
+          item_id: selectedItem.id,
+          vault_id: selectedItem.vault_id,
+          reason
+        }
+      });
+      
+      toast.success('Break-glass request submitted. Requires 2 approvals.');
+      setShowItemDetail(false);
+    } catch (error) {
+      console.error('Error requesting break-glass:', error);
+      toast.error('Failed to request break-glass access');
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      await apiClient.post(`/items/${selectedItem.id}/checkout`);
+      toast.success('Item checked out successfully');
+      fetchItems();
+      setShowItemDetail(false);
+    } catch (error) {
+      console.error('Error checking out:', error);
+      toast.error(error.response?.data?.detail || 'Failed to check out');
+    }
+  };
+
+  const handleCheckin = async () => {
+    try {
+      await apiClient.post(`/items/${selectedItem.id}/checkin`);
+      toast.success('Item checked in successfully');
+      fetchItems();
+      setShowItemDetail(false);
+    } catch (error) {
+      console.error('Error checking in:', error);
+      toast.error(error.response?.data?.detail || 'Failed to check in');
+    }
+  };
+
   const getCriticalityColor = (crit) => {
     switch (crit) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
