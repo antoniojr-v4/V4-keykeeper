@@ -90,6 +90,27 @@ const Dashboard = () => {
         />
         
         <div className="p-8">
+          {/* Admin Setup Banner - Only show if not admin */}
+          {user?.role !== 'admin' && user?.role !== 'manager' && (
+            <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-red-900 mb-2">🔐 First Time Setup</h3>
+                  <p className="text-sm text-red-700 mb-3">
+                    Looks like this is your first time here! Click the button to become an admin and unlock all features.
+                  </p>
+                  <Button
+                    onClick={handleMakeMeAdmin}
+                    data-testid="make-me-admin-btn"
+                    className="bg-[#ff2c2c] hover:bg-[#e61919] text-white"
+                  >
+                    🚀 Make Me Admin
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {statCards.map((stat, index) => (
