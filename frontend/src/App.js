@@ -86,6 +86,7 @@ function App() {
   return (
     <AuthContext.Provider value={{ user, token, logout, setUser }}>
       <div className="App">
+        <Toaster position="top-right" richColors />
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
