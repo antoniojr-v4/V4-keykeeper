@@ -76,7 +76,7 @@ const Login = () => {
             onClick={handleGoogleLogin}
             disabled={loading}
             data-testid="google-login-btn"
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#10b981] hover:bg-[#059669] text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#ff2c2c] hover:bg-[#e61919] text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Signing in...' : 'Sign in with Google'}
           </button>
