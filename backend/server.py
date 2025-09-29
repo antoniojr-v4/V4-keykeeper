@@ -923,6 +923,19 @@ async def update_webhook_settings(webhook_url: str, current_user: User = Depends
     
     return {"message": "Webhook settings updated successfully"}
 
+@api_router.post("/admin/make-me-admin")
+async def make_me_admin(current_user: User = Depends(get_current_user)):
+    """Emergency route to make current user admin (temporary)"""
+    result = await db.users.update_one(
+        {'id': current_user.id},
+        {'$set': {'role': 'admin'}}
+    )
+    
+    if result.modified_count > 0:
+        return {"message": f"User {current_user.email} is now admin"}
+    else:
+        return {"message": "User is already admin"}
+
 
 # Include the router in the main app
 app.include_router(api_router)
