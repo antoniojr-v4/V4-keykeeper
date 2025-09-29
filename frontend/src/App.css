@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --v4-primary: #10b981;
-  --v4-primary-hover: #059669;
+  --v4-primary: #ff2c2c;
+  --v4-primary-hover: #e61919;
   --v4-sidebar-bg: #1e1e1e;
   --v4-sidebar-hover: #2d2d2d;
   --v4-background: #fafafa;
