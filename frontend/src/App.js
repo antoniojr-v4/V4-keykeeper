@@ -102,6 +102,7 @@ function App() {
             <Route path="/settings" element={token ? <Settings /> : <Navigate to="/login" />} />
             <Route path="/breakglass" element={token ? <BreakGlass /> : <Navigate to="/login" />} />
             <Route path="/client-submit/:token" element={<ClientSubmit />} />
+            <Route path="/view-secret/:token" element={<ViewSecret />} />
           </Routes>
         </BrowserRouter>
       </div>
