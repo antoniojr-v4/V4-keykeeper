@@ -447,9 +447,44 @@ async def get_vault(vault_id: str, current_user: User = Depends(get_current_user
         raise HTTPException(status_code=404, detail="Vault not found")
     return Vault(**vault)
 
+@api_router.put("/vaults/{vault_id}", response_model=Vault)
+async def update_vault(vault_id: str, name: str, tags: Dict[str, str] = {}, current_user: User = Depends(get_current_user), request: Request = None):
+    """Update vault (Admin/Manager only)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can update vaults")
+    
+    vault = await db.vaults.find_one({'id': vault_id})
+    if not vault:
+        raise HTTPException(status_code=404, detail="Vault not found")
+    
+    # Update path if name changed
+    new_path = name
+    if vault.get('parent_id'):
+        parent = await db.vaults.find_one({'id': vault['parent_id']})
+        if parent:
+            new_path = f"{parent['path']} > {name}"
+    
+    await db.vaults.update_one(
+        {'id': vault_id},
+        {'$set': {
+            'name': name,
+            'path': new_path,
+            'tags': tags,
+            'updated_at': datetime.now(timezone.utc)
+        }}
+    )
+    
+    await log_audit('vault_updated', current_user, request, vault_id=vault_id, details={'name': name})
+    
+    updated_vault = await db.vaults.find_one({'id': vault_id})
+    return Vault(**updated_vault)
+
 @api_router.delete("/vaults/{vault_id}")
 async def delete_vault(vault_id: str, current_user: User = Depends(get_current_user), request: Request = None):
-    """Delete vault"""
+    """Delete vault (Admin/Manager only)"""
+    if current_user.role not in ['admin', 'manager']:
+        raise HTTPException(status_code=403, detail="Only admins and managers can delete vaults")
+    
     vault = await db.vaults.find_one({'id': vault_id})
     if not vault:
         raise HTTPException(status_code=404, detail="Vault not found")
