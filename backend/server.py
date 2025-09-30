@@ -1443,7 +1443,7 @@ async def invite_user(invite_data: InviteUserRequest, request: Request, current_
     return {"message": "User invited successfully", "user": new_user}
 
 @api_router.put("/users/{user_id}/role")
-async def update_user_role(user_id: str, role_data: UpdateRoleRequest, current_user: User = Depends(get_current_user)):
+async def update_user_role(user_id: str, role_data: UpdateRoleRequest, request: Request, current_user: User = Depends(get_current_user)):
     """Update user role (Admin only)"""
     if current_user.role != 'admin':
         raise HTTPException(status_code=403, detail="Only admins can update user roles")
@@ -1462,8 +1462,8 @@ async def update_user_role(user_id: str, role_data: UpdateRoleRequest, current_u
     # Log audit
     await log_audit(
         event_type="user_role_updated",
-        user_id=current_user.id,
-        user_email=current_user.email,
+        user=current_user,
+        request=request,
         details={
             "target_user_id": user_id,
             "new_role": role_data.role
