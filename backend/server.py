@@ -182,12 +182,12 @@ class VaultCreate(BaseModel):
 
 class ItemCreate(BaseModel):
     vault_id: str
-    type: str
+    type: str  # web_credential, api_key, ad_token_google, ad_token_meta, ad_token_tiktok, ad_token_linkedin, social_login, ssh_key, db_credential, certificate, secure_note, attachment
     title: str
     login: Optional[str] = None
     password: Optional[str] = None
     login_url: Optional[str] = None
-    metadata: Dict[str, Any] = {}
+    metadata: Dict[str, Any] = {}  # For specific fields per type
     environment: str = "prod"
     criticality: str = "medium"
     expires_at: Optional[datetime] = None
@@ -196,6 +196,11 @@ class ItemCreate(BaseModel):
     login_instructions: Optional[str] = None
     no_copy: bool = False
     requires_checkout: bool = False
+    
+    # New fields for better organization
+    owner: Optional[str] = None  # Owner name/email
+    client: Optional[str] = None  # Client name
+    squad: Optional[str] = None  # Squad/Team name
 
 class ItemUpdate(BaseModel):
     title: Optional[str] = None
