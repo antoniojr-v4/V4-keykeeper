@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { apiClient } from '@/App';
 import { Eye, EyeOff, Copy, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
@@ -14,9 +14,13 @@ const ViewSecret = () => {
   const [viewed, setViewed] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [passwordCopied, setPasswordCopied] = useState(false);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    fetchSecret();
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchSecret();
+    }
   }, [token]);
 
   // Countdown timer - only starts when secret is loaded
