@@ -106,7 +106,7 @@ class Vault(BaseModel):
 class Item(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     vault_id: str
-    type: str  # web_credential, api_key, ad_token, etc.
+    type: str  # web_credential, api_key, ad_token_google, ad_token_meta, ad_token_tiktok, ad_token_linkedin, social_login, ssh_key, db_credential, certificate, secure_note, attachment
     title: str
     login: Optional[str] = None
     password_encrypted: Optional[str] = None
@@ -121,7 +121,12 @@ class Item(BaseModel):
     notes_encrypted: Optional[str] = None
     login_instructions: Optional[str] = None
     
-    # New security features
+    # New fields
+    owner: Optional[str] = None  # Owner name/email
+    client: Optional[str] = None  # Client name
+    squad: Optional[str] = None  # Squad/Team name
+    
+    # Security features
     no_copy: bool = False  # Prevent copy/paste
     requires_checkout: bool = False  # Check-out/check-in flow
     checked_out_by: Optional[str] = None
