@@ -1101,6 +1101,123 @@ async def get_notifications(current_user: User = Depends(get_current_user)):
     }
 
 
+# ============= ONE-TIME SECRET ROUTES =============
+
+@api_router.post("/items/{item_id}/one-time-link")
+async def create_one_time_link(
+    item_id: str, 
+    expires_hours: int = 24,
+    current_user: User = Depends(get_current_user),
+    request: Request = None
+):
+    """Create a one-time view link for an item"""
+    # Get item
+    item = await db.items.find_one({'id': item_id})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    # Check permissions
+    vault = await db.vaults.find_one({'id': item['vault_id']})
+    if not has_vault_permission(current_user, vault, 'read'):
+        raise HTTPException(status_code=403, detail="No permission to access this item")
+    
+    # Generate unique token
+    token = str(uuid.uuid4())
+    
+    # Create one-time secret
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=expires_hours)
+    
+    one_time_secret = OneTimeSecret(
+        token=token,
+        item_id=item_id,
+        created_by=current_user.id,
+        password_encrypted=item['password_encrypted'],
+        expires_at=expires_at
+    )
+    
+    await db.one_time_secrets.insert_one(one_time_secret.dict())
+    
+    # Log audit
+    await log_audit(
+        event_type="one_time_link_created",
+        user=current_user,
+        request=request,
+        item_id=item_id,
+        vault_id=item['vault_id'],
+        details={'expires_at': expires_at.isoformat()}
+    )
+    
+    # Generate URL
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+    one_time_url = f"{frontend_url}/view-secret/{token}"
+    
+    return {
+        "token": token,
+        "url": one_time_url,
+        "expires_at": expires_at,
+        "max_views": 1
+    }
+
+
+@api_router.get("/view-secret/{token}")
+async def view_one_time_secret(token: str, request: Request):
+    """View a one-time secret (public endpoint)"""
+    # Find secret
+    secret = await db.one_time_secrets.find_one({'token': token})
+    
+    if not secret:
+        raise HTTPException(status_code=404, detail="Secret not found or already viewed")
+    
+    # Check if expired
+    if datetime.fromisoformat(secret['expires_at']).replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+        await db.one_time_secrets.delete_one({'token': token})
+        raise HTTPException(status_code=410, detail="This secret has expired")
+    
+    # Check if already viewed
+    if secret['current_views'] >= secret['max_views']:
+        await db.one_time_secrets.delete_one({'token': token})
+        raise HTTPException(status_code=410, detail="This secret has already been viewed")
+    
+    # Get item details
+    item = await db.items.find_one({'id': secret['item_id']})
+    if not item:
+        await db.one_time_secrets.delete_one({'token': token})
+        raise HTTPException(status_code=404, detail="Associated item not found")
+    
+    # Decrypt password
+    password_decrypted = fernet.decrypt(item['password_encrypted'].encode()).decode()
+    
+    # Get client IP
+    client_ip = await get_client_ip(request)
+    
+    # Update view count and delete
+    await db.one_time_secrets.update_one(
+        {'token': token},
+        {
+            '$set': {
+                'current_views': secret['current_views'] + 1,
+                'viewed_at': datetime.now(timezone.utc),
+                'viewed_by_ip': client_ip
+            }
+        }
+    )
+    
+    # Delete the secret after viewing
+    await db.one_time_secrets.delete_one({'token': token})
+    
+    # Return secret details (without sensitive vault info)
+    return {
+        "title": item['title'],
+        "login": item.get('login'),
+        "password": password_decrypted,
+        "login_url": item.get('login_url'),
+        "notes": item.get('notes'),
+        "type": item['type'],
+        "viewed": True,
+        "message": "⚠️ This secret has been viewed and is no longer accessible"
+    }
+
+
 # ============= BREAK-GLASS ROUTES =============
 
 @api_router.post("/breakglass/request", response_model=BreakGlassRequest)
