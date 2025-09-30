@@ -1271,6 +1271,76 @@ async def import_from_sheets(rows: List[ImportSheetRow], current_user: User = De
     }
 
 
+# ============= EXPIRATION NOTIFICATIONS =============
+
+@api_router.get("/cron/check-expiring-items")
+async def check_expiring_items():
+    """Check for items expiring in 7 days and send notifications (cron job)"""
+    try:
+        seven_days_from_now = datetime.now(timezone.utc) + timedelta(days=7)
+        one_day_from_now = datetime.now(timezone.utc) + timedelta(days=1)
+        
+        # Find items expiring in the next 7 days
+        expiring_items = await db.items.find({
+            'expires_at': {
+                '$gte': datetime.now(timezone.utc),
+                '$lte': seven_days_from_now
+            }
+        }).to_list(100)
+        
+        notifications_sent = 0
+        
+        for item in expiring_items:
+            days_until_expiry = (item['expires_at'] - datetime.now(timezone.utc)).days
+            
+            # Get vault info
+            vault = await db.vaults.find_one({'id': item['vault_id']})
+            vault_path = vault['path'] if vault else 'Unknown Vault'
+            
+            # Get owner info
+            owner = await db.users.find_one({'id': item['owner_id']})
+            owner_name = owner['name'] if owner else item.get('owner', 'Unknown')
+            
+            # Send notification
+            message = f"⚠️ CREDENTIAL EXPIRING SOON\n\nItem: {item['title']}\nVault: {vault_path}\nOwner: {owner_name}\nExpires: {item['expires_at'].strftime('%Y-%m-%d')}\nDays remaining: {days_until_expiry}\n\n🔄 Please renew this credential!"
+            
+            await send_google_chat_notification(message)
+            notifications_sent += 1
+            
+            # Log the notification
+            log_entry = AuditLog(
+                event_type='expiration_notification_sent',
+                user_id='system',
+                user_email='system@v4company.com',
+                item_id=item['id'],
+                vault_id=item['vault_id'],
+                details={
+                    'title': item['title'],
+                    'days_until_expiry': days_until_expiry,
+                    'expires_at': item['expires_at'].isoformat()
+                }
+            )
+            await db.audit_logs.insert_one(log_entry.dict())
+        
+        return {
+            'checked': len(expiring_items),
+            'notifications_sent': notifications_sent,
+            'items_expiring': [
+                {
+                    'id': item['id'],
+                    'title': item['title'],
+                    'expires_at': item['expires_at'].isoformat(),
+                    'days_remaining': (item['expires_at'] - datetime.now(timezone.utc)).days
+                }
+                for item in expiring_items
+            ]
+        }
+        
+    except Exception as e:
+        logger.error(f"Error checking expiring items: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============= DASHBOARD STATS =============
 
 @api_router.get("/stats/dashboard")
