@@ -609,6 +609,105 @@ async def client_submit_item(token: str, item_data: ItemCreate):
 
 # ============= ITEM ROUTES =============
 
+@api_router.get("/items/templates/{item_type}")
+async def get_item_template(item_type: str):
+    """Get metadata template for specific item type"""
+    templates = {
+        "ad_token_google": {
+            "fields": ["account_id", "customer_id", "mcc_id", "conversion_tracking_id", "gtm_container_id"],
+            "labels": {
+                "account_id": "Google Ads Account ID",
+                "customer_id": "Customer ID",
+                "mcc_id": "MCC ID (if applicable)",
+                "conversion_tracking_id": "Conversion Tracking ID",
+                "gtm_container_id": "GTM Container ID"
+            }
+        },
+        "ad_token_meta": {
+            "fields": ["business_manager_id", "ad_account_id", "pixel_id", "app_id", "app_secret"],
+            "labels": {
+                "business_manager_id": "Business Manager ID",
+                "ad_account_id": "Ad Account ID",
+                "pixel_id": "Facebook Pixel ID",
+                "app_id": "App ID",
+                "app_secret": "App Secret"
+            }
+        },
+        "ad_token_tiktok": {
+            "fields": ["advertiser_id", "pixel_id", "app_id"],
+            "labels": {
+                "advertiser_id": "Advertiser ID",
+                "pixel_id": "TikTok Pixel ID",
+                "app_id": "App ID"
+            }
+        },
+        "ad_token_linkedin": {
+            "fields": ["account_id", "campaign_manager_account", "insight_tag_id"],
+            "labels": {
+                "account_id": "LinkedIn Account ID",
+                "campaign_manager_account": "Campaign Manager Account",
+                "insight_tag_id": "Insight Tag ID"
+            }
+        },
+        "gtm": {
+            "fields": ["container_id", "account_id", "workspace"],
+            "labels": {
+                "container_id": "GTM Container ID",
+                "account_id": "Account ID",
+                "workspace": "Workspace Name"
+            }
+        },
+        "integration_rd": {
+            "fields": ["api_key", "client_id", "client_secret", "webhook_url"],
+            "labels": {
+                "api_key": "RD Station API Key",
+                "client_id": "Client ID",
+                "client_secret": "Client Secret",
+                "webhook_url": "Webhook URL"
+            }
+        },
+        "integration_hubspot": {
+            "fields": ["api_key", "portal_id", "app_id"],
+            "labels": {
+                "api_key": "HubSpot API Key",
+                "portal_id": "Portal ID",
+                "app_id": "App ID"
+            }
+        },
+        "integration_ekyte": {
+            "fields": ["api_key", "client_id", "environment"],
+            "labels": {
+                "api_key": "eKyte API Key",
+                "client_id": "Client ID",
+                "environment": "Environment (prod/sandbox)"
+            }
+        },
+        "ssh_key": {
+            "fields": ["hostname", "port", "username", "private_key_path"],
+            "labels": {
+                "hostname": "Hostname/IP",
+                "port": "Port",
+                "username": "Username",
+                "private_key_path": "Private Key Path"
+            }
+        },
+        "db_credential": {
+            "fields": ["host", "port", "database", "username", "connection_string"],
+            "labels": {
+                "host": "Host",
+                "port": "Port",
+                "database": "Database Name",
+                "username": "Username",
+                "connection_string": "Connection String"
+            }
+        }
+    }
+    
+    if item_type not in templates:
+        return {"fields": [], "labels": {}}
+    
+    return templates[item_type]
+
 @api_router.post("/items", response_model=Item)
 async def create_item(item_data: ItemCreate, current_user: User = Depends(get_current_user), request: Request = None):
     """Create a new item (secret)"""
