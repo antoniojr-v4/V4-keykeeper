@@ -638,6 +638,9 @@ async def create_item(item_data: ItemCreate, current_user: User = Depends(get_cu
         login_instructions=item_data.login_instructions,
         no_copy=item_data.no_copy,
         requires_checkout=item_data.requires_checkout,
+        owner=item_data.owner or current_user.name,
+        client=item_data.client,
+        squad=item_data.squad,
         created_by=current_user.id,
         updated_by=current_user.id
     )
