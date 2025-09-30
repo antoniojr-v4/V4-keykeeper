@@ -1048,6 +1048,81 @@ const VaultExplorer = () => {
         </DialogContent>
       </Dialog>
 
+      {/* One-Time Link Modal */}
+      <Dialog open={showOneTimeLink} onOpenChange={setShowOneTimeLink}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>🔗 One-Time Secret Link</DialogTitle>
+            <DialogDescription>Share this link to give one-time access to this secret</DialogDescription>
+          </DialogHeader>
+          
+          {oneTimeLink && (
+            <div className="space-y-4 py-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-medium mb-1">⚠️ Important Security Notice</p>
+                    <ul className="list-disc list-inside space-y-1 text-xs">
+                      <li>This link can only be viewed <strong>once</strong></li>
+                      <li>Expires in 24 hours</li>
+                      <li>After viewing, the secret is permanently deleted</li>
+                      <li>Share only with trusted recipients via secure channels</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Label>One-Time Link</Label>
+                <div className="flex gap-2 mt-2">
+                  <Input
+                    value={oneTimeLink.url}
+                    readOnly
+                    className="flex-1 font-mono text-sm"
+                  />
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard.writeText(oneTimeLink.url);
+                      toast.success('Link copied to clipboard');
+                    }}
+                    variant="outline"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <Label className="text-xs text-[#6b7280]">Expires At</Label>
+                  <p className="text-[#1f2937] mt-1">
+                    {new Date(oneTimeLink.expires_at).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-xs text-[#6b7280]">Max Views</Label>
+                  <p className="text-[#1f2937] mt-1">{oneTimeLink.max_views} time</p>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-xs text-blue-800">
+                  💡 <strong>Tip:</strong> Send this link via a secure messaging app or email. The recipient will see the full credentials once and they'll be immediately deleted.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button onClick={() => setShowOneTimeLink(false)} variant="outline">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Client Share Link Modal */}
       <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
         <DialogContent>
