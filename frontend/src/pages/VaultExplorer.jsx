@@ -348,7 +348,7 @@ const VaultExplorer = () => {
                 {/* Filters and Search */}
                 <div className="bg-white rounded-xl p-4 mb-6 shadow-sm border border-[#e5e7eb]">
                   {/* Show client link button if vault is type client */}
-                  {selectedVault.type === 'client' && (
+                  {selectedVault?.type === 'client' && (
                     <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-blue-900">Client Vault</p>
