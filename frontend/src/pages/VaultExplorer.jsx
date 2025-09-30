@@ -826,6 +826,53 @@ const VaultExplorer = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Client Share Link Modal */}
+      <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Client Submission Link</DialogTitle>
+            <DialogDescription>Share this secure link with your client</DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-sm text-green-800 mb-3">
+                ✓ Link generated successfully! This link allows clients to submit credentials securely without seeing existing items.
+              </p>
+              <div className="flex gap-2">
+                <Input 
+                  value={clientShareUrl || ''} 
+                  readOnly 
+                  className="flex-1 text-sm"
+                />
+                <Button 
+                  onClick={copyShareUrl}
+                  variant="outline"
+                  data-testid="copy-share-url-btn"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="text-xs text-[#6b7280]">
+              <p className="font-semibold mb-2">What clients can do:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Submit new credentials securely</li>
+                <li>All submissions are encrypted</li>
+              </ul>
+              
+              <p className="font-semibold mt-3 mb-2">What clients CANNOT do:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>View existing credentials</li>
+                <li>Edit or delete items</li>
+                <li>Access other vaults</li>
+              </ul>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
