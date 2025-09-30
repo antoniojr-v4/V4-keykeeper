@@ -195,7 +195,10 @@ const ViewSecret = () => {
           {/* Password */}
           {secret?.password && (
             <div>
-              <label className="block text-sm font-medium text-[#374151] mb-2">Password</label>
+              <label className="block text-sm font-medium text-[#374151] mb-2">
+                Password
+                {passwordCopied && <span className="ml-2 text-green-600 text-xs">✓ Copied</span>}
+              </label>
               <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-lg p-3 flex items-center justify-between gap-2">
                 <p className="text-[#1f2937] font-mono flex-1">
                   {showPassword ? secret.password : '••••••••••••'}
@@ -212,10 +215,11 @@ const ViewSecret = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => copyToClipboard(secret.password)}
-                    className="hover:bg-white"
+                    onClick={() => copyToClipboard(secret.password, true)}
+                    className={`hover:bg-white ${passwordCopied ? 'bg-green-50 text-green-600' : ''}`}
+                    disabled={passwordCopied}
                   >
-                    <Copy className="w-4 h-4" />
+                    {passwordCopied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </div>
               </div>
