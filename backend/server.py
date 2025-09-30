@@ -1400,25 +1400,37 @@ async def get_users(current_user: User = Depends(get_current_user)):
     return [User(**user) for user in users]
 
 @api_router.post("/users/invite")
-async def invite_user(email: EmailStr, name: str, role: str, current_user: User = Depends(get_current_user)):
+async def invite_user(invite_data: InviteUserRequest, current_user: User = Depends(get_current_user)):
     """Invite a new user (Admin/Manager only)"""
     if current_user.role not in ['admin', 'manager']:
         raise HTTPException(status_code=403, detail="Only admins and managers can invite users")
     
     # Check if user already exists
-    existing_user = await db.users.find_one({'email': email})
+    existing_user = await db.users.find_one({'email': invite_data.email})
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
     
     # Create new user
     new_user = User(
-        email=email,
-        name=name,
-        role=role,
+        email=invite_data.email,
+        name=invite_data.name,
+        role=invite_data.role,
         status='pending'
     )
     
     await db.users.insert_one(new_user.dict())
+    
+    # Log audit
+    await log_audit(
+        event_type="user_invited",
+        user_id=current_user.id,
+        user_email=current_user.email,
+        details={
+            "invited_email": invite_data.email,
+            "invited_name": invite_data.name,
+            "assigned_role": invite_data.role
+        }
+    )
     
     # TODO: Send invitation email
     
