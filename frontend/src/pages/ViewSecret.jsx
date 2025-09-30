@@ -19,15 +19,15 @@ const ViewSecret = () => {
     fetchSecret();
   }, [token]);
 
-  // Countdown timer
+  // Countdown timer - only starts when secret is loaded
   useEffect(() => {
-    if (!secret || error) return;
+    if (!secret || error || loading) return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          window.close();
+          // Don't auto-close, just show message
           return 0;
         }
         return prev - 1;
@@ -35,17 +35,7 @@ const ViewSecret = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [secret, error]);
-
-  // Auto-close after password is copied (with 3 second delay)
-  useEffect(() => {
-    if (passwordCopied) {
-      const closeTimer = setTimeout(() => {
-        window.close();
-      }, 3000);
-      return () => clearTimeout(closeTimer);
-    }
-  }, [passwordCopied]);
+  }, [secret, error, loading]);
 
   const fetchSecret = async () => {
     try {
