@@ -254,12 +254,28 @@ const ViewSecret = () => {
 
         {/* Footer */}
         <div className="mt-6 pt-6 border-t border-[#e5e7eb]">
-          <div className="flex items-center gap-2 text-green-600">
-            <CheckCircle className="w-5 h-5" />
-            <p className="text-sm font-medium">Secret viewed successfully</p>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-green-600">
+              <CheckCircle className="w-5 h-5" />
+              <p className="text-sm font-medium">Secret viewed successfully</p>
+            </div>
+            
+            {passwordCopied && (
+              <Button
+                onClick={() => window.close()}
+                className="bg-[#ff2c2c] hover:bg-[#e61919] text-white"
+              >
+                Close Window
+              </Button>
+            )}
           </div>
-          <p className="text-xs text-[#9ca3af] mt-2">
+          <p className="text-xs text-[#9ca3af]">
             This secret has been permanently deleted from our servers for security.
+            {countdown === 0 && !passwordCopied && (
+              <span className="block mt-2 text-[#ff2c2c] font-medium">
+                ⚠️ Timer expired. Please close this window manually.
+              </span>
+            )}
           </p>
         </div>
       </div>
