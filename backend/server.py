@@ -151,6 +151,19 @@ class BreakGlassRequest(BaseModel):
     completed_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class OneTimeSecret(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    token: str
+    item_id: str
+    created_by: str
+    password_encrypted: str
+    max_views: int = 1
+    current_views: int = 0
+    expires_at: datetime
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    viewed_at: Optional[datetime] = None
+    viewed_by_ip: Optional[str] = None
+
 class AuditLog(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     event_type: str
