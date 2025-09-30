@@ -244,6 +244,12 @@ class InviteUserRequest(BaseModel):
     name: str
     role: str
 
+class UpdateRoleRequest(BaseModel):
+    role: str
+
+class UpdateStatusRequest(BaseModel):
+    status: str
+
 class ImportSheetRow(BaseModel):
     vault_path: str
     type: str
