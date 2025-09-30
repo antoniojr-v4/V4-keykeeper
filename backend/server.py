@@ -1116,11 +1116,6 @@ async def create_one_time_link(
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
-    # Check permissions
-    vault = await db.vaults.find_one({'id': item['vault_id']})
-    if not has_vault_permission(current_user, vault, 'read'):
-        raise HTTPException(status_code=403, detail="No permission to access this item")
-    
     # Generate unique token
     token = str(uuid.uuid4())
     
