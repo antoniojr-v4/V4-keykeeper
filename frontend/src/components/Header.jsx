@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext, apiClient } from '@/App';
-import { Bell, ChevronDown, User, Settings, LogOut, Clock, AlertCircle } from 'lucide-react';
+import { Bell, ChevronDown, User, Settings, LogOut, Clock, AlertCircle, HelpCircle } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const Header = ({ title, description }) => {
