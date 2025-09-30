@@ -771,7 +771,7 @@ const VaultExplorer = () => {
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <div className="w-10 h-10 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center">
-                              <Key className="w-5 h-5 text-[#ff2c2c]" />
+                              {React.createElement(getItemIcon(item.type), { className: "w-5 h-5 text-[#ff2c2c]" })}
                             </div>
                           </div>
                           <div className="flex gap-1">
