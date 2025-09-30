@@ -1133,7 +1133,12 @@ async def create_one_time_link(
         expires_at=expires_at
     )
     
-    await db.one_time_secrets.insert_one(one_time_secret.dict())
+    # Convert to dict and prepare for MongoDB
+    secret_dict = one_time_secret.dict()
+    secret_dict['expires_at'] = expires_at.isoformat()
+    secret_dict['created_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.one_time_secrets.insert_one(secret_dict)
     
     # Log audit
     await log_audit(
