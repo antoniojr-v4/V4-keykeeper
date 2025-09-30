@@ -1,12 +1,51 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '@/App';
-import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { AuthContext, apiClient } from '@/App';
+import { Bell, ChevronDown, User, Settings, LogOut, Clock, AlertCircle } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const Header = ({ title, description }) => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  
+  useEffect(() => {
+    fetchNotifications();
+    // Poll for notifications every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  const fetchNotifications = async () => {
+    try {
+      const response = await apiClient.get('/notifications');
+      setNotifications(response.data.notifications || []);
+      setUnreadCount(response.data.unread_count || 0);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+  
+  const getNotificationIcon = (type) => {
+    if (type === 'breakglass') return '🚨';
+    if (type === 'jit_request') return '⏰';
+    if (type === 'expiring') return '⚠️';
+    return '🔔';
+  };
+  
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
 
   return (
     <div className="bg-white border-b border-[#e5e7eb] px-8 py-4">
