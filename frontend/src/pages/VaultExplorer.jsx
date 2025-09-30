@@ -542,55 +542,109 @@ const VaultExplorer = () => {
                           New Item
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle>Create New Item</DialogTitle>
                           <DialogDescription>Add a new password or secret to {selectedVault.name}</DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreateItem}>
                           <div className="space-y-4 py-4">
+                            {/* Title and Type */}
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <Label htmlFor="title">Title</Label>
+                                <Label htmlFor="title">Title *</Label>
                                 <Input id="title" name="title" required placeholder="e.g., Google Ads Account" />
                               </div>
                               <div>
-                                <Label htmlFor="type">Type</Label>
-                                <Select name="type" defaultValue="web_credential">
+                                <Label htmlFor="type">Type *</Label>
+                                <Select value={selectedItemType} onValueChange={handleItemTypeChange}>
                                   <SelectTrigger>
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="web_credential">Web Credential</SelectItem>
                                     <SelectItem value="api_key">API Key</SelectItem>
-                                    <SelectItem value="ad_token">Ad Token</SelectItem>
+                                    <SelectItem value="ad_token_google">Google Ads</SelectItem>
+                                    <SelectItem value="ad_token_meta">Meta/Facebook Ads</SelectItem>
+                                    <SelectItem value="ad_token_tiktok">TikTok Ads</SelectItem>
+                                    <SelectItem value="ad_token_linkedin">LinkedIn Ads</SelectItem>
+                                    <SelectItem value="gtm">Google Tag Manager</SelectItem>
+                                    <SelectItem value="integration_rd">RD Station</SelectItem>
+                                    <SelectItem value="integration_hubspot">HubSpot</SelectItem>
+                                    <SelectItem value="integration_ekyte">eKyte</SelectItem>
+                                    <SelectItem value="social_login">Social Login</SelectItem>
                                     <SelectItem value="ssh_key">SSH Key</SelectItem>
-                                    <SelectItem value="db_credential">DB Credential</SelectItem>
+                                    <SelectItem value="db_credential">Database</SelectItem>
+                                    <SelectItem value="certificate">Certificate</SelectItem>
                                     <SelectItem value="secure_note">Secure Note</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
                             </div>
 
+                            {/* Basic Credentials */}
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <Label htmlFor="login">Login/Username</Label>
                                 <Input id="login" name="login" placeholder="username@example.com" />
                               </div>
                               <div>
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Password/Secret</Label>
                                 <Input id="password" name="password" type="password" placeholder="••••••••" />
                               </div>
                             </div>
 
                             <div>
-                              <Label htmlFor="login_url">Login URL</Label>
-                              <Input id="login_url" name="login_url" type="url" placeholder="https://example.com/login" />
+                              <Label htmlFor="login_url">URL</Label>
+                              <Input id="login_url" name="login_url" type="url" placeholder="https://example.com" />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* Template-specific metadata fields */}
+                            {itemTemplate && itemTemplate.fields && itemTemplate.fields.length > 0 && (
+                              <div className="border-t border-[#e5e7eb] pt-4">
+                                <h4 className="text-sm font-semibold text-[#1f2937] mb-3">
+                                  {selectedItemType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Fields
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                  {itemTemplate.fields.map((field) => (
+                                    <div key={field}>
+                                      <Label htmlFor={`metadata_${field}`}>
+                                        {itemTemplate.labels[field] || field}
+                                      </Label>
+                                      <Input 
+                                        id={`metadata_${field}`}
+                                        name={`metadata_${field}`}
+                                        placeholder={itemTemplate.labels[field] || field}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Organization Fields */}
+                            <div className="border-t border-[#e5e7eb] pt-4">
+                              <h4 className="text-sm font-semibold text-[#1f2937] mb-3">Organization</h4>
+                              <div className="grid grid-cols-3 gap-4">
+                                <div>
+                                  <Label htmlFor="owner">Owner</Label>
+                                  <Input id="owner" name="owner" placeholder="Responsible person" />
+                                </div>
+                                <div>
+                                  <Label htmlFor="client">Client</Label>
+                                  <Input id="client" name="client" placeholder="Client name" />
+                                </div>
+                                <div>
+                                  <Label htmlFor="squad">Squad/Team</Label>
+                                  <Input id="squad" name="squad" placeholder="Team name" />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Environment and Settings */}
+                            <div className="grid grid-cols-3 gap-4">
                               <div>
-                                <Label htmlFor="environment">Environment</Label>
+                                <Label htmlFor="environment">Environment *</Label>
                                 <Select name="environment" defaultValue="prod">
                                   <SelectTrigger>
                                     <SelectValue />
@@ -602,7 +656,7 @@ const VaultExplorer = () => {
                                 </Select>
                               </div>
                               <div>
-                                <Label htmlFor="criticality">Criticality</Label>
+                                <Label htmlFor="criticality">Criticality *</Label>
                                 <Select name="criticality" defaultValue="medium">
                                   <SelectTrigger>
                                     <SelectValue />
@@ -614,26 +668,25 @@ const VaultExplorer = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <Label htmlFor="client">Client Tag</Label>
-                                <Input id="client" name="client" placeholder="Optional" />
-                              </div>
-                              <div>
-                                <Label htmlFor="squad">Squad Tag</Label>
-                                <Input id="squad" name="squad" placeholder="Optional" />
+                                <Label htmlFor="expires_at">Expires At</Label>
+                                <Input 
+                                  id="expires_at" 
+                                  name="expires_at" 
+                                  type="date"
+                                  placeholder="YYYY-MM-DD"
+                                />
                               </div>
                             </div>
 
+                            {/* Notes and Instructions */}
                             <div>
-                              <Label htmlFor="notes">Notes</Label>
+                              <Label htmlFor="notes">Notes (encrypted)</Label>
                               <textarea 
                                 id="notes" 
                                 name="notes" 
                                 className="w-full min-h-[80px] px-3 py-2 border border-[#e5e7eb] rounded-lg"
-                                placeholder="Additional notes (encrypted)"
+                                placeholder="Additional notes..."
                               />
                             </div>
 
@@ -642,6 +695,7 @@ const VaultExplorer = () => {
                               <Input id="login_instructions" name="login_instructions" placeholder="e.g., Use VPN first" />
                             </div>
 
+                            {/* Security Options */}
                             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#e5e7eb]">
                               <div className="flex items-center gap-2">
                                 <input 
@@ -668,7 +722,9 @@ const VaultExplorer = () => {
                             </div>
                           </div>
                           <DialogFooter>
-                            <Button type="submit" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">Create Item</Button>
+                            <Button type="submit" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">
+                              Create Item
+                            </Button>
                           </DialogFooter>
                         </form>
                       </DialogContent>
