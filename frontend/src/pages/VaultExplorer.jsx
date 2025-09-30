@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { apiClient, AuthContext } from '@/App';
-import { FolderPlus, Plus, Search, Eye, EyeOff, Copy, Edit2, Trash2, ChevronRight, Key, AlertCircle, Clock, Shield, Lock, Unlock } from 'lucide-react';
+import { FolderPlus, Plus, Search, Eye, EyeOff, Copy, Edit2, Trash2, ChevronRight, Key, AlertCircle, Clock, Shield, Lock, Unlock, Globe, Code, Share2, Database, FileKey, StickyNote, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -10,6 +10,26 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+
+// Icon mapping for different item types
+const getItemIcon = (type) => {
+  const iconMap = {
+    'web_credential': Globe,
+    'api_key': Code,
+    'ad_token_google': () => <span className="text-lg">🎯</span>,
+    'ad_token_meta': () => <span className="text-lg">📘</span>,
+    'ad_token_tiktok': () => <span className="text-lg">🎵</span>,
+    'ad_token_linkedin': () => <span className="text-lg">💼</span>,
+    'social_login': Share2,
+    'ssh_key': FileKey,
+    'db_credential': Database,
+    'certificate': Shield,
+    'secure_note': StickyNote,
+    'attachment': Paperclip
+  };
+  
+  return iconMap[type] || Key;
+};
 
 const VaultExplorer = () => {
   const { user } = useContext(AuthContext);
