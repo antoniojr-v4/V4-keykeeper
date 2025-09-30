@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FolderLock, History, Clock, Upload, LogOut, Settings, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
+import { Home, FolderLock, History, Clock, Upload, LogOut, Settings, ChevronLeft, ChevronRight, Shield, HelpCircle } from 'lucide-react';
 import { AuthContext } from '@/App';
 
 const Sidebar = () => {
@@ -15,6 +15,7 @@ const Sidebar = () => {
     { path: '/breakglass', icon: Shield, label: 'Break-Glass', testId: 'sidebar-menu-breakglass', adminOnly: true },
     { path: '/audit', icon: History, label: 'Audit Logs', testId: 'sidebar-menu-audit' },
     { path: '/import', icon: Upload, label: 'Import', testId: 'sidebar-menu-import' },
+    { path: '/help', icon: HelpCircle, label: 'Help', testId: 'sidebar-menu-help' },
   ];
 
   return (
