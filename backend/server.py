@@ -546,7 +546,7 @@ async def generate_client_link(vault_id: str, current_user: User = Depends(get_c
         }}
     )
     
-    frontend_url = os.environ.get('FRONTEND_URL', 'https://keykeeper-9.preview.emergentagent.com')
+    frontend_url = os.environ.get('FRONTEND_URL', 'https://vaultkeeper-9.preview.emergentagent.com')
     share_url = f"{frontend_url}/client-submit/{share_token}"
     
     return {"share_url": share_url, "token": share_token}
@@ -1067,7 +1067,7 @@ async def create_breakglass_request(item_id: str, vault_id: str, reason: str, cu
                                 "text": "APPROVE",
                                 "onClick": {
                                     "openLink": {
-                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://keykeeper-9.preview.emergentagent.com')}/breakglass"
+                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://vaultkeeper-9.preview.emergentagent.com')}/breakglass"
                                     }
                                 }
                             }
@@ -1077,7 +1077,7 @@ async def create_breakglass_request(item_id: str, vault_id: str, reason: str, cu
                                 "text": "DENY",
                                 "onClick": {
                                     "openLink": {
-                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://keykeeper-9.preview.emergentagent.com')}/breakglass"
+                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://vaultkeeper-9.preview.emergentagent.com')}/breakglass"
                                     }
                                 }
                             }
