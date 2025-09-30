@@ -139,8 +139,10 @@ const ViewSecret = () => {
             </p>
             <p className="text-xs text-red-700">
               {passwordCopied 
-                ? 'Password copied! Window will close in 3 seconds...'
-                : `Save the information now. Window auto-closes in ${countdown} seconds.`
+                ? 'Password copied successfully! You can close this window now.'
+                : countdown === 0
+                ? 'Time expired. Please save the credentials and close this window manually.'
+                : `Save the information now. You have ${countdown} seconds remaining.`
               }
             </p>
           </div>
