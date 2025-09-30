@@ -60,6 +60,16 @@ const Header = ({ title, description }) => {
 
         {/* User Section */}
         <div className="flex items-center gap-4">
+          {/* Help Button */}
+          <button 
+            onClick={() => navigate('/help')}
+            className="relative p-2 hover:bg-[#fafafa] rounded-full transition-colors"
+            data-testid="help-btn"
+            title="Help & Documentation"
+          >
+            <HelpCircle className="w-5 h-5 text-[#6b7280]" />
+          </button>
+
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
