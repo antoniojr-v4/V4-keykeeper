@@ -1108,8 +1108,8 @@ async def get_notifications(current_user: User = Depends(get_current_user)):
 
 @api_router.post("/items/{item_id}/one-time-link")
 async def create_one_time_link(
-    item_id: str, 
-    expires_hours: int = 24,
+    item_id: str,
+    link_request: OneTimeLinkRequest,
     current_user: User = Depends(get_current_user),
     request: Request = None
 ):
@@ -1123,7 +1123,7 @@ async def create_one_time_link(
     token = str(uuid.uuid4())
     
     # Create one-time secret
-    expires_at = datetime.now(timezone.utc) + timedelta(hours=expires_hours)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=link_request.expires_hours)
     
     one_time_secret = OneTimeSecret(
         token=token,
