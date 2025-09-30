@@ -971,6 +971,15 @@ const VaultExplorer = () => {
                     Request Temporary Access
                   </Button>
                   <Button 
+                    onClick={handleGenerateOneTimeLink}
+                    data-testid="one-time-link-btn"
+                    variant="outline"
+                    className="border-purple-500 text-purple-700 hover:bg-purple-50"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Generate One-Time Link
+                  </Button>
+                  <Button 
                     onClick={() => handleDeleteItem(selectedItem.id)}
                     data-testid="delete-item-btn"
                     variant="destructive"
