@@ -31,6 +31,8 @@ const VaultExplorer = () => {
   const [revealedPassword, setRevealedPassword] = useState(null);
   const [clientShareUrl, setClientShareUrl] = useState(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showEditVault, setShowEditVault] = useState(false);
+  const [vaultToEdit, setVaultToEdit] = useState(null);
 
   useEffect(() => {
     fetchVaults();
