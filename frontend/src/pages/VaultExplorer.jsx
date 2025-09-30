@@ -954,6 +954,55 @@ const VaultExplorer = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Vault Modal */}
+      <Dialog open={showEditVault} onOpenChange={setShowEditVault}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Vault</DialogTitle>
+            <DialogDescription>Update vault information</DialogDescription>
+          </DialogHeader>
+          {vaultToEdit && (
+            <form onSubmit={handleUpdateVault}>
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label htmlFor="edit-name">Vault Name</Label>
+                  <Input 
+                    id="edit-name" 
+                    name="name" 
+                    required 
+                    defaultValue={vaultToEdit.name}
+                    placeholder="e.g., Client X"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-client">Client Tag</Label>
+                  <Input 
+                    id="edit-client" 
+                    name="client" 
+                    defaultValue={vaultToEdit.tags?.client || ''}
+                    placeholder="Optional"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-squad">Squad Tag</Label>
+                  <Input 
+                    id="edit-squad" 
+                    name="squad" 
+                    defaultValue={vaultToEdit.tags?.squad || ''}
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" className="bg-[#ff2c2c] hover:bg-[#e61919] text-white">
+                  Update Vault
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
