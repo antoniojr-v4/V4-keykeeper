@@ -239,6 +239,11 @@ class JITRequestCreate(BaseModel):
     reason: str
     requested_duration_hours: int = 2
 
+class InviteUserRequest(BaseModel):
+    email: EmailStr
+    name: str
+    role: str
+
 class ImportSheetRow(BaseModel):
     vault_path: str
     type: str
