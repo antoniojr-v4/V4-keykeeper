@@ -12,10 +12,40 @@ const ViewSecret = () => {
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [viewed, setViewed] = useState(false);
+  const [countdown, setCountdown] = useState(60);
+  const [passwordCopied, setPasswordCopied] = useState(false);
 
   useEffect(() => {
     fetchSecret();
   }, [token]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!secret || error) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          window.close();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [secret, error]);
+
+  // Auto-close after password is copied (with 3 second delay)
+  useEffect(() => {
+    if (passwordCopied) {
+      const closeTimer = setTimeout(() => {
+        window.close();
+      }, 3000);
+      return () => clearTimeout(closeTimer);
+    }
+  }, [passwordCopied]);
 
   const fetchSecret = async () => {
     try {
@@ -36,9 +66,13 @@ const ViewSecret = () => {
     }
   };
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text, isPassword = false) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard');
+    if (isPassword) {
+      setPasswordCopied(true);
+      toast.success('Password copied! Window will close in 3 seconds...', { duration: 3000 });
+    }
   };
 
   if (loading) {
