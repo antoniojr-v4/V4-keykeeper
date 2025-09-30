@@ -250,6 +250,9 @@ class UpdateRoleRequest(BaseModel):
 class UpdateStatusRequest(BaseModel):
     status: str
 
+class OneTimeLinkRequest(BaseModel):
+    expires_hours: int = 24
+
 class ImportSheetRow(BaseModel):
     vault_path: str
     type: str
