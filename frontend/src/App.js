@@ -12,6 +12,7 @@ import ImportPage from "@/pages/ImportPage";
 import Settings from "@/pages/Settings";
 import BreakGlass from "@/pages/BreakGlass";
 import ClientSubmit from "@/pages/ClientSubmit";
+import ViewSecret from "@/pages/ViewSecret";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
