@@ -104,28 +104,48 @@ const VaultExplorer = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     
+    // Build metadata from template fields
+    const metadata = {};
+    if (itemTemplate && itemTemplate.fields) {
+      itemTemplate.fields.forEach(field => {
+        const value = formData.get(`metadata_${field}`);
+        if (value) {
+          metadata[field] = value;
+        }
+      });
+    }
+    
     try {
       await apiClient.post('/items', {
         vault_id: selectedVault.id,
-        type: formData.get('type'),
+        type: selectedItemType,
         title: formData.get('title'),
         login: formData.get('login'),
         password: formData.get('password'),
         login_url: formData.get('login_url'),
         environment: formData.get('environment'),
         criticality: formData.get('criticality'),
+        owner: formData.get('owner'),
+        client: formData.get('client') || '',
+        squad: formData.get('squad') || '',
+        expires_at: formData.get('expires_at') || null,
         tags: {
           client: formData.get('client') || '',
-          squad: formData.get('squad') || ''
+          squad: formData.get('squad') || '',
+          environment: formData.get('environment'),
+          criticality: formData.get('criticality')
         },
         notes: formData.get('notes'),
         login_instructions: formData.get('login_instructions'),
         no_copy: formData.get('no_copy') === 'on',
-        requires_checkout: formData.get('requires_checkout') === 'on'
+        requires_checkout: formData.get('requires_checkout') === 'on',
+        metadata: metadata
       });
       
       toast.success('Item created successfully');
       setShowCreateItem(false);
+      setSelectedItemType('web_credential');
+      setItemTemplate(null);
       fetchItems();
     } catch (error) {
       console.error('Error creating item:', error);
