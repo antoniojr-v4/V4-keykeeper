@@ -1037,6 +1037,70 @@ async def deny_jit_request(request_id: str, current_user: User = Depends(get_cur
     return {"message": "Request denied"}
 
 
+# ============= NOTIFICATIONS ROUTES =============
+
+@api_router.get("/notifications")
+async def get_notifications(current_user: User = Depends(get_current_user)):
+    """Get aggregated notifications for current user"""
+    notifications = []
+    
+    # 1. Pending JIT requests (for admins/managers)
+    if current_user.role in ['admin', 'manager']:
+        pending_jit = await db.jit_requests.find({'status': 'pending'}).sort('created_at', -1).limit(5).to_list(5)
+        for req in pending_jit:
+            item = await db.items.find_one({'id': req['item_id']})
+            requester = await db.users.find_one({'id': req['requester_id']})
+            notifications.append({
+                'id': req['id'],
+                'type': 'jit_request',
+                'title': 'JIT Access Request',
+                'message': f"{requester.get('name', 'User')} requested access to {item.get('title', 'item')}",
+                'timestamp': req['created_at'],
+                'link': '/jit-requests'
+            })
+    
+    # 2. Expiring items (within 7 days)
+    seven_days_later = datetime.now(timezone.utc) + timedelta(days=7)
+    expiring_items = await db.items.find({
+        'expires_at': {'$lte': seven_days_later.isoformat(), '$gte': datetime.now(timezone.utc).isoformat()}
+    }).sort('expires_at', 1).limit(5).to_list(5)
+    
+    for item in expiring_items:
+        vault = await db.vaults.find_one({'id': item['vault_id']})
+        days_left = (datetime.fromisoformat(item['expires_at']).replace(tzinfo=timezone.utc) - datetime.now(timezone.utc)).days
+        notifications.append({
+            'id': f"exp_{item['id']}",
+            'type': 'expiring',
+            'title': 'Credential Expiring Soon',
+            'message': f"{item['title']} in {vault.get('name', 'vault')} expires in {days_left} days",
+            'timestamp': item.get('created_at', datetime.now(timezone.utc)),
+            'link': '/vaults'
+        })
+    
+    # 3. Pending break-glass requests (for admins)
+    if current_user.role == 'admin':
+        pending_bg = await db.breakglass_requests.find({'status': 'pending'}).sort('created_at', -1).limit(3).to_list(3)
+        for req in pending_bg:
+            item = await db.items.find_one({'id': req['item_id']})
+            requester = await db.users.find_one({'id': req['requester_id']})
+            notifications.append({
+                'id': req['id'],
+                'type': 'breakglass',
+                'title': '🚨 Break-glass Request',
+                'message': f"{requester.get('name', 'User')} requested emergency access to {item.get('title', 'item')}",
+                'timestamp': req['created_at'],
+                'link': '/break-glass'
+            })
+    
+    # Sort by timestamp descending
+    notifications.sort(key=lambda x: x['timestamp'], reverse=True)
+    
+    return {
+        'notifications': notifications[:10],
+        'unread_count': len(notifications)
+    }
+
+
 # ============= BREAK-GLASS ROUTES =============
 
 @api_router.post("/breakglass/request", response_model=BreakGlassRequest)
