@@ -270,6 +270,22 @@ const VaultExplorer = () => {
     }
   };
 
+  const handleGenerateOneTimeLink = async () => {
+    if (!selectedItem) return;
+    
+    try {
+      const response = await apiClient.post(`/items/${selectedItem.id}/one-time-link`, {
+        expires_hours: 24
+      });
+      setOneTimeLink(response.data);
+      setShowOneTimeLink(true);
+      toast.success('One-time link generated successfully');
+    } catch (error) {
+      console.error('Error generating link:', error);
+      toast.error(error.response?.data?.detail || 'Failed to generate link');
+    }
+  };
+
   const handleGenerateClientLink = async () => {
     if (!selectedVault) return;
     
