@@ -297,6 +297,21 @@ const VaultExplorer = () => {
     }
   };
 
+  const fetchItemTemplate = async (itemType) => {
+    try {
+      const response = await apiClient.get(`/items/templates/${itemType}`);
+      setItemTemplate(response.data);
+    } catch (error) {
+      console.error('Error fetching template:', error);
+      setItemTemplate(null);
+    }
+  };
+
+  const handleItemTypeChange = (newType) => {
+    setSelectedItemType(newType);
+    fetchItemTemplate(newType);
+  };
+
   const getCriticalityColor = (crit) => {
     switch (crit) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
