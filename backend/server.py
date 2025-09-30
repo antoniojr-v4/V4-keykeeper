@@ -1443,21 +1443,32 @@ async def invite_user(invite_data: InviteUserRequest, current_user: User = Depen
     return {"message": "User invited successfully", "user": new_user}
 
 @api_router.put("/users/{user_id}/role")
-async def update_user_role(user_id: str, role: str, current_user: User = Depends(get_current_user)):
+async def update_user_role(user_id: str, role_data: UpdateRoleRequest, current_user: User = Depends(get_current_user)):
     """Update user role (Admin only)"""
     if current_user.role != 'admin':
         raise HTTPException(status_code=403, detail="Only admins can update user roles")
     
-    if role not in ['admin', 'manager', 'contributor', 'client']:
+    if role_data.role not in ['admin', 'manager', 'contributor', 'client']:
         raise HTTPException(status_code=400, detail="Invalid role")
     
     result = await db.users.update_one(
         {'id': user_id},
-        {'$set': {'role': role}}
+        {'$set': {'role': role_data.role}}
     )
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    # Log audit
+    await log_audit(
+        event_type="user_role_updated",
+        user_id=current_user.id,
+        user_email=current_user.email,
+        details={
+            "target_user_id": user_id,
+            "new_role": role_data.role
+        }
+    )
     
     return {"message": "User role updated successfully"}
 
