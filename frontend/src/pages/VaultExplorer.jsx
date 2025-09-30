@@ -245,6 +245,56 @@ const VaultExplorer = () => {
     toast.success('Link copied to clipboard');
   };
 
+  const handleEditVault = (vault, e) => {
+    e.stopPropagation();
+    setVaultToEdit(vault);
+    setShowEditVault(true);
+  };
+
+  const handleUpdateVault = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    try {
+      await apiClient.put(`/vaults/${vaultToEdit.id}`, null, {
+        params: {
+          name: formData.get('name'),
+          tags: JSON.stringify({
+            client: formData.get('client') || '',
+            squad: formData.get('squad') || ''
+          })
+        }
+      });
+      
+      toast.success('Vault updated successfully');
+      setShowEditVault(false);
+      fetchVaults();
+    } catch (error) {
+      console.error('Error updating vault:', error);
+      toast.error('Failed to update vault');
+    }
+  };
+
+  const handleDeleteVault = async (vaultId, e) => {
+    e.stopPropagation();
+    
+    if (!window.confirm('Are you sure you want to delete this vault? All items will be deleted.')) {
+      return;
+    }
+    
+    try {
+      await apiClient.delete(`/vaults/${vaultId}`);
+      toast.success('Vault deleted successfully');
+      fetchVaults();
+      if (selectedVault?.id === vaultId) {
+        setSelectedVault(null);
+      }
+    } catch (error) {
+      console.error('Error deleting vault:', error);
+      toast.error(error.response?.data?.detail || 'Failed to delete vault');
+    }
+  };
+
   const getCriticalityColor = (crit) => {
     switch (crit) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
