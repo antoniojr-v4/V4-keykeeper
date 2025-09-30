@@ -109,25 +109,49 @@ const ViewSecret = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#fafafa] to-[#f5f5f5] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center">
-            <Lock className="w-6 h-6 text-[#ff2c2c]" />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-[#ff2c2c]/10 rounded-lg flex items-center justify-center">
+              <Lock className="w-6 h-6 text-[#ff2c2c]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#1f2937]">Secure Secret View</h1>
+              <p className="text-sm text-[#6b7280]">One-time access only</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-[#1f2937]">Secure Secret View</h1>
-            <p className="text-sm text-[#6b7280]">One-time access only</p>
-          </div>
+          
+          {/* Countdown Timer */}
+          {!passwordCopied && (
+            <div className="text-center">
+              <div className={`text-3xl font-bold ${countdown <= 10 ? 'text-red-600' : 'text-[#ff2c2c]'}`}>
+                {countdown}s
+              </div>
+              <p className="text-xs text-[#6b7280]">Auto-close</p>
+            </div>
+          )}
+          
+          {passwordCopied && (
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-600">
+                ✓ Copied
+              </div>
+              <p className="text-xs text-[#6b7280]">Closing...</p>
+            </div>
+          )}
         </div>
 
         {/* Warning Banner */}
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-medium text-red-800 mb-1">
               ⚠️ This secret has been viewed and permanently deleted
             </p>
             <p className="text-xs text-red-700">
-              Save the information now. You won't be able to access it again.
+              {passwordCopied 
+                ? 'Password copied! Window will close in 3 seconds...'
+                : `Save the information now. Window auto-closes in ${countdown} seconds.`
+              }
             </p>
           </div>
         </div>
