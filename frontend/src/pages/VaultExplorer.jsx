@@ -33,6 +33,8 @@ const VaultExplorer = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showEditVault, setShowEditVault] = useState(false);
   const [vaultToEdit, setVaultToEdit] = useState(null);
+  const [selectedItemType, setSelectedItemType] = useState('web_credential');
+  const [itemTemplate, setItemTemplate] = useState(null);
 
   useEffect(() => {
     fetchVaults();
