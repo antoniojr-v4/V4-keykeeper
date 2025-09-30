@@ -369,19 +369,48 @@ const VaultExplorer = () => {
 
             <div className="space-y-1">
               {vaults.map((vault) => (
-                <button
+                <div
                   key={vault.id}
-                  data-testid={`vault-item-${vault.id}`}
-                  onClick={() => setSelectedVault(vault)}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                  className={`group relative flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                     selectedVault?.id === vault.id
                       ? 'bg-[#ff2c2c] text-white'
                       : 'hover:bg-[#fafafa] text-[#1f2937]'
                   }`}
                 >
-                  <ChevronRight className="w-4 h-4" />
-                  <span className="text-sm font-medium truncate">{vault.name}</span>
-                </button>
+                  <button
+                    data-testid={`vault-item-${vault.id}`}
+                    onClick={() => setSelectedVault(vault)}
+                    className="flex-1 flex items-center gap-2 text-left"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                    <span className="text-sm font-medium truncate">{vault.name}</span>
+                  </button>
+                  
+                  {(user?.role === 'admin' || user?.role === 'manager') && (
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => handleEditVault(vault, e)}
+                        data-testid={`edit-vault-${vault.id}`}
+                        className={`p-1 rounded hover:bg-opacity-20 hover:bg-white ${
+                          selectedVault?.id === vault.id ? 'text-white' : 'text-[#6b7280]'
+                        }`}
+                        title="Edit vault"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeleteVault(vault.id, e)}
+                        data-testid={`delete-vault-${vault.id}`}
+                        className={`p-1 rounded hover:bg-opacity-20 hover:bg-white ${
+                          selectedVault?.id === vault.id ? 'text-white' : 'text-red-500'
+                        }`}
+                        title="Delete vault"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
               
               {vaults.length === 0 && (
