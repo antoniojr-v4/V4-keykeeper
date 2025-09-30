@@ -61,13 +61,55 @@ const Header = ({ title, description }) => {
         {/* User Section */}
         <div className="flex items-center gap-4">
           {/* Notifications */}
-          <button 
-            className="relative p-2 hover:bg-[#fafafa] rounded-full transition-colors"
-            data-testid="notifications-btn"
-          >
-            <Bell className="w-5 h-5 text-[#6b7280]" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[#ef4444] rounded-full"></span>
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                className="relative p-2 hover:bg-[#fafafa] rounded-full transition-colors"
+                data-testid="notifications-btn"
+              >
+                <Bell className="w-5 h-5 text-[#6b7280]" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-[#ef4444] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80 max-h-[400px] overflow-y-auto">
+              <div className="px-3 py-2 border-b">
+                <p className="font-semibold text-[#1f2937]">Notifications</p>
+                {unreadCount > 0 && (
+                  <p className="text-xs text-[#6b7280]">{unreadCount} new</p>
+                )}
+              </div>
+              
+              {notifications.length === 0 ? (
+                <div className="px-3 py-6 text-center">
+                  <Bell className="w-8 h-8 text-[#d1d5db] mx-auto mb-2" />
+                  <p className="text-sm text-[#6b7280]">No notifications</p>
+                </div>
+              ) : (
+                notifications.map((notif) => (
+                  <DropdownMenuItem
+                    key={notif.id}
+                    onClick={() => navigate(notif.link)}
+                    className="px-3 py-3 cursor-pointer hover:bg-[#fafafa] focus:bg-[#fafafa] border-b last:border-b-0"
+                  >
+                    <div className="flex gap-3 w-full">
+                      <div className="text-xl flex-shrink-0">
+                        {getNotificationIcon(notif.type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[#1f2937] mb-1">{notif.title}</p>
+                        <p className="text-xs text-[#6b7280] line-clamp-2">{notif.message}</p>
+                        <p className="text-xs text-[#9ca3af] mt-1">{formatTimestamp(notif.timestamp)}</p>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                ))
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* User Profile Dropdown */}
           <DropdownMenu>
