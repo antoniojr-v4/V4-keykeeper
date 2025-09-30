@@ -1473,7 +1473,7 @@ async def update_user_role(user_id: str, role_data: UpdateRoleRequest, request: 
     return {"message": "User role updated successfully"}
 
 @api_router.put("/users/{user_id}/status")
-async def update_user_status(user_id: str, status_data: UpdateStatusRequest, current_user: User = Depends(get_current_user)):
+async def update_user_status(user_id: str, status_data: UpdateStatusRequest, request: Request, current_user: User = Depends(get_current_user)):
     """Update user status (Admin/Manager only)"""
     if current_user.role not in ['admin', 'manager']:
         raise HTTPException(status_code=403, detail="Only admins and managers can update user status")
@@ -1492,8 +1492,8 @@ async def update_user_status(user_id: str, status_data: UpdateStatusRequest, cur
     # Log audit
     await log_audit(
         event_type="user_status_updated",
-        user_id=current_user.id,
-        user_email=current_user.email,
+        user=current_user,
+        request=request,
         details={
             "target_user_id": user_id,
             "new_status": status_data.status
