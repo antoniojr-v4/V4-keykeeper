@@ -1473,21 +1473,32 @@ async def update_user_role(user_id: str, role_data: UpdateRoleRequest, current_u
     return {"message": "User role updated successfully"}
 
 @api_router.put("/users/{user_id}/status")
-async def update_user_status(user_id: str, status: str, current_user: User = Depends(get_current_user)):
+async def update_user_status(user_id: str, status_data: UpdateStatusRequest, current_user: User = Depends(get_current_user)):
     """Update user status (Admin/Manager only)"""
     if current_user.role not in ['admin', 'manager']:
         raise HTTPException(status_code=403, detail="Only admins and managers can update user status")
     
-    if status not in ['active', 'inactive', 'pending']:
+    if status_data.status not in ['active', 'inactive', 'pending']:
         raise HTTPException(status_code=400, detail="Invalid status")
     
     result = await db.users.update_one(
         {'id': user_id},
-        {'$set': {'status': status}}
+        {'$set': {'status': status_data.status}}
     )
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    # Log audit
+    await log_audit(
+        event_type="user_status_updated",
+        user_id=current_user.id,
+        user_email=current_user.email,
+        details={
+            "target_user_id": user_id,
+            "new_status": status_data.status
+        }
+    )
     
     return {"message": "User status updated successfully"}
 
