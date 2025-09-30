@@ -55,6 +55,8 @@ const VaultExplorer = () => {
   const [vaultToEdit, setVaultToEdit] = useState(null);
   const [selectedItemType, setSelectedItemType] = useState('web_credential');
   const [itemTemplate, setItemTemplate] = useState(null);
+  const [showOneTimeLink, setShowOneTimeLink] = useState(false);
+  const [oneTimeLink, setOneTimeLink] = useState(null);
 
   useEffect(() => {
     fetchVaults();
