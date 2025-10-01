@@ -1097,7 +1097,7 @@ async def get_notifications(current_user: User = Depends(get_current_user)):
                     'title': 'Credential Expiring Soon',
                     'message': message,
                     'timestamp': item.get('created_at', now),
-                    'link': f"/vaults?item={item['id']}"
+                    'link': '/vaults'
                 })
         except Exception as e:
             logger.error(f"Error processing expiring item: {e}")
