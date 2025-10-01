@@ -560,7 +560,7 @@ async def generate_client_link(vault_id: str, current_user: User = Depends(get_c
         }}
     )
     
-    frontend_url = os.environ.get('FRONTEND_URL', 'https://vaultkeeper-9.preview.emergentagent.com')
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
     share_url = f"{frontend_url}/client-submit/{share_token}"
     
     return {"share_url": share_url, "token": share_token}
