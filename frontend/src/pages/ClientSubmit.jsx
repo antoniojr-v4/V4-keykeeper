@@ -106,7 +106,7 @@ const ClientSubmit = () => {
       <div className="max-w-2xl w-full bg-white rounded-xl p-8 shadow-lg">
         <div className="flex items-center gap-3 mb-6">
           <img 
-            src="https://customer-assets.emergentagent.com/job_keykeeper-9/artifacts/vspn4e79_Canecas.png" 
+            src="/v4-logo.png" 
             alt="V4 Logo" 
             className="w-12 h-12"
           />
