@@ -102,7 +102,10 @@ const Header = ({ title, description }) => {
                 notifications.map((notif) => (
                   <DropdownMenuItem
                     key={notif.id}
-                    onClick={() => navigate(notif.link)}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      navigate(notif.link);
+                    }}
                     className="px-3 py-3 cursor-pointer hover:bg-[#fafafa] focus:bg-[#fafafa] border-b last:border-b-0"
                   >
                     <div className="flex gap-3 w-full">
