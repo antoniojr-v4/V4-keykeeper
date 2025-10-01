@@ -36,7 +36,9 @@ api_router = APIRouter(prefix="/api")
 
 # Security
 security = HTTPBearer()
-JWT_SECRET = os.environ.get('JWT_SECRET', 'v4-secret-key-change-in-production')
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    raise ValueError("JWT_SECRET environment variable must be set")
 JWT_ALGORITHM = 'HS256'
 
 # Google OAuth
