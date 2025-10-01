@@ -1115,7 +1115,7 @@ async def get_notifications(current_user: User = Depends(get_current_user)):
                 'title': '🚨 Break-glass Request',
                 'message': f"{requester.get('name', 'User')} requested emergency access to {item.get('title', 'item')}",
                 'timestamp': req['created_at'],
-                'link': '/break-glass'
+                'link': '/breakglass'
             })
     
     # Sort by timestamp descending
