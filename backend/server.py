@@ -1262,7 +1262,7 @@ async def create_breakglass_request(item_id: str, vault_id: str, reason: str, cu
                                 "text": "APPROVE",
                                 "onClick": {
                                     "openLink": {
-                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://vaultkeeper-9.preview.emergentagent.com')}/breakglass"
+                                        "url": f"{os.environ.get('FRONTEND_URL', 'http://localhost:3000')}/breakglass"
                                     }
                                 }
                             }
@@ -1272,7 +1272,7 @@ async def create_breakglass_request(item_id: str, vault_id: str, reason: str, cu
                                 "text": "DENY",
                                 "onClick": {
                                     "openLink": {
-                                        "url": f"{os.environ.get('FRONTEND_URL', 'https://vaultkeeper-9.preview.emergentagent.com')}/breakglass"
+                                        "url": f"{os.environ.get('FRONTEND_URL', 'http://localhost:3000')}/breakglass"
                                     }
                                 }
                             }
