@@ -25,7 +25,7 @@ const Sidebar = () => {
         {!isCollapsed && (
           <div className="flex items-center gap-3">
             <img 
-              src="https://customer-assets.emergentagent.com/job_keykeeper-9/artifacts/vspn4e79_Canecas.png" 
+              src="/v4-logo.png" 
               alt="V4 Logo" 
               className="w-8 h-8"
             />
@@ -34,7 +34,7 @@ const Sidebar = () => {
         )}
         {isCollapsed && (
           <img 
-            src="https://customer-assets.emergentagent.com/job_keykeeper-9/artifacts/vspn4e79_Canecas.png" 
+            src="/v4-logo.png" 
             alt="V4 Logo" 
             className="w-8 h-8 mx-auto"
           />
