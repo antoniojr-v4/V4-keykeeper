@@ -1061,7 +1061,7 @@ async def get_notifications(current_user: User = Depends(get_current_user)):
                 'title': 'JIT Access Request',
                 'message': f"{requester.get('name', 'User')} requested access to {item.get('title', 'item')}",
                 'timestamp': req['created_at'],
-                'link': '/jit-requests'
+                'link': '/jit'
             })
     
     # 2. Expiring items (within 7 days or less)
