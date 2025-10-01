@@ -1064,23 +1064,44 @@ async def get_notifications(current_user: User = Depends(get_current_user)):
                 'link': '/jit-requests'
             })
     
-    # 2. Expiring items (within 7 days)
+    # 2. Expiring items (within 7 days or less)
     seven_days_later = datetime.now(timezone.utc) + timedelta(days=7)
+    now = datetime.now(timezone.utc)
+    
+    # Find items that expire within the next 7 days (including today and past due)
     expiring_items = await db.items.find({
-        'expires_at': {'$lte': seven_days_later.isoformat(), '$gte': datetime.now(timezone.utc).isoformat()}
-    }).sort('expires_at', 1).limit(5).to_list(5)
+        'expires_at': {'$exists': True, '$ne': None, '$lte': seven_days_later.isoformat()}
+    }).sort('expires_at', 1).limit(10).to_list(10)
     
     for item in expiring_items:
-        vault = await db.vaults.find_one({'id': item['vault_id']})
-        days_left = (datetime.fromisoformat(item['expires_at']).replace(tzinfo=timezone.utc) - datetime.now(timezone.utc)).days
-        notifications.append({
-            'id': f"exp_{item['id']}",
-            'type': 'expiring',
-            'title': 'Credential Expiring Soon',
-            'message': f"{item['title']} in {vault.get('name', 'vault')} expires in {days_left} days",
-            'timestamp': item.get('created_at', datetime.now(timezone.utc)),
-            'link': '/vaults'
-        })
+        try:
+            expires_at = datetime.fromisoformat(item['expires_at']).replace(tzinfo=timezone.utc)
+            days_left = (expires_at - now).days
+            
+            # Only include if not expired more than 1 day ago and expires within 7 days
+            if days_left >= -1 and days_left <= 7:
+                vault = await db.vaults.find_one({'id': item['vault_id']})
+                
+                if days_left < 0:
+                    message = f"⚠️ {item['title']} in {vault.get('name', 'vault')} EXPIRED {abs(days_left)} day(s) ago"
+                elif days_left == 0:
+                    message = f"🔴 {item['title']} in {vault.get('name', 'vault')} expires TODAY"
+                elif days_left == 1:
+                    message = f"🟡 {item['title']} in {vault.get('name', 'vault')} expires TOMORROW"
+                else:
+                    message = f"{item['title']} in {vault.get('name', 'vault')} expires in {days_left} days"
+                
+                notifications.append({
+                    'id': f"exp_{item['id']}",
+                    'type': 'expiring',
+                    'title': 'Credential Expiring Soon',
+                    'message': message,
+                    'timestamp': item.get('created_at', now),
+                    'link': f"/vaults?item={item['id']}"
+                })
+        except Exception as e:
+            logger.error(f"Error processing expiring item: {e}")
+            continue
     
     # 3. Pending break-glass requests (for admins)
     if current_user.role == 'admin':
